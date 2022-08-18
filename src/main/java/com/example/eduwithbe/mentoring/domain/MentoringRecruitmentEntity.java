@@ -47,6 +47,9 @@ public class MentoringRecruitmentEntity {
     @Column(nullable = false, length = 200)
     private String info;
 
+    @Column(nullable = false, length = 50)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user")
     private UserEntity user;

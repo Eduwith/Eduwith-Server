@@ -20,6 +20,7 @@ public class MentoringRecruitSaveUserDto {
     private String way;
     private String keyword;
     private String info;
+    private String name;
     private UserEntity user;
 
     public MentoringRecruitmentEntity toEntity(){
@@ -32,6 +33,7 @@ public class MentoringRecruitSaveUserDto {
                 .way(way)
                 .keyword(keyword)
                 .info(info)
+                .name(name)
                 .user(user)
                 .build();
     }

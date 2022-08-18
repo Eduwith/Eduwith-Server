@@ -20,6 +20,7 @@ public class MentoringRecruitListDto {
     private String way;
     private String keyword;
     private String info;
+    private String name;
     //private String email;
 
     @Builder
@@ -33,5 +34,6 @@ public class MentoringRecruitListDto {
         this.way = me.getWay();
         this.keyword = me.getKeyword();
         this.info = me.getInfo();
+        this.name = me.getName();
     }
 }

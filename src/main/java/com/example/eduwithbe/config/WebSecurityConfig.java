@@ -65,7 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //http.httpBasic().disable();
         http.logout() // 로그아웃 처리
                 .logoutUrl("/user/logout")
-                .logoutSuccessUrl("/user/login") // 로그아웃 성공 후 이동페이지
+                .logoutSuccessUrl("/") // 로그아웃 성공 후 이동페이지
                 .and()
                 .cors().and()
                 .csrf().disable()
@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/**").permitAll()
                 .antMatchers("/main/**").permitAll()
                 .antMatchers("/test/**").permitAll()
-                //.antMatchers("/**").permitAll()
+                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

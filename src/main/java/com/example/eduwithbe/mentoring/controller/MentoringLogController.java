@@ -2,9 +2,11 @@ package com.example.eduwithbe.mentoring.controller;
 
 import com.example.eduwithbe.mentoring.domain.MentoringEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringLogEntity;
+import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
 import com.example.eduwithbe.mentoring.dto.*;
 import com.example.eduwithbe.mentoring.repository.MentoringRepository;
 import com.example.eduwithbe.mentoring.service.MentoringLogService;
+import com.example.eduwithbe.mentoring.service.MentoringRecruitmentService;
 import com.example.eduwithbe.security.JwtTokenProvider;
 import com.example.eduwithbe.user.domain.UserEntity;
 import com.example.eduwithbe.user.dto.UserMentoringApplyDetailDTO;
@@ -24,6 +26,7 @@ public class MentoringLogController {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MentoringLogService mentoringLogService;
+    private final MentoringRecruitmentService mentoringRecruitmentService;
     private final MentoringRepository mentoringRepository;
     private final UserRepository userRepository;
 
@@ -53,8 +56,6 @@ public class MentoringLogController {
 
         List<MentoringLogAllList> list = new ArrayList<>();
 
-        System.out.println("========" +loginUser.getMentoringEntities().size());
-
         for(int i = 0; i < loginUser.getMentoringEntities().size(); i++) {
             Optional<MentoringEntity> mentoringEntity = mentoringRepository.findById(loginUser.getMentoringEntities().get(i).getMentoring_no());
             List<MentoringLogGetIdDto> mentoringLogGetIdDtos = mentoringLogService.findAllMentoringLog(mentoringEntity.get().getMentoring_no());
@@ -63,10 +64,8 @@ public class MentoringLogController {
             mentee.setEmail(userEntity.getEmail());
             mentee.setAge(userEntity.getAge());
             mentee.setName(userEntity.getName());
-            System.out.println("=========="+mentoringEntity.get().getMentoring_no());
-            System.out.println(mentee);
-            System.out.println(mentoringLogGetIdDtos);
-            list.add(new MentoringLogAllList(mentoringEntity.get().getMentoring_no(), mentee, mentoringLogGetIdDtos));
+
+            list.add(new MentoringLogAllList(mentoringEntity.get().getMentoring_no(),mentoringEntity.get().getM_no().getTitle(), mentee, mentoringLogGetIdDtos));
         }
 
         return list;

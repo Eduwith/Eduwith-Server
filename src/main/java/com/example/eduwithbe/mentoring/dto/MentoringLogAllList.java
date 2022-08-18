@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class MentoringLogAllList {
     private Long mentoring_no;
+    private String m_title;
     private UserMentoringApplyDetailDTO user;
     private List<MentoringLogGetIdDto> logList;
 }

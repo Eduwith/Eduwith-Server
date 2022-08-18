@@ -18,6 +18,7 @@ public class MentoringRecruitDto {
     private String way;
     private String keyword;
     private String info;
+    private String name;
 
     @Builder
     public MentoringRecruitDto(MentoringRecruitmentEntity me) {
@@ -30,5 +31,6 @@ public class MentoringRecruitDto {
         this.way = me.getWay();
         this.keyword = me.getKeyword();
         this.info = me.getInfo();
+        this.name = me.getName();
     }
 }

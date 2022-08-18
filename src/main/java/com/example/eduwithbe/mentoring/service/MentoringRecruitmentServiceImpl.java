@@ -35,6 +35,7 @@ public class MentoringRecruitmentServiceImpl implements MentoringRecruitmentServ
         mentoringRecruitSaveUserDto.setM_period(dto.getM_period());
         mentoringRecruitSaveUserDto.setTitle(dto.getTitle());
         mentoringRecruitSaveUserDto.setWay(dto.getWay());
+        mentoringRecruitSaveUserDto.setName(userEntity.getName());
 
         MentoringRecruitmentEntity mentoringRecruit = mentoringRecruitSaveUserDto.toEntity();
         mr.save(mentoringRecruit);
