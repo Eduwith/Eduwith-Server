@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,9 +26,15 @@ public class StudyController {
 
 
     // 모든 스터디 모집글 조회 (With. Pagination)
+//    @GetMapping("")
+//    public Map<String, Object> getAllStudies(final CommonParams params) {
+//        return studyService.findAllStudies(params);
+//    }
+
+    // 모든 스터디 모집글 조회
     @GetMapping("")
-    public Map<String, Object> getAllStudies(final CommonParams params) {
-        return studyService.findAllStudies(params);
+    public List<StudyRecruitDto> findAllStudies() {
+        return studyService.findAllStudies();
     }
 
     // 스터디 모집글 상세정보 조회
@@ -51,18 +58,25 @@ public class StudyController {
         return result;
     }
 
+    // 스터디 태그 검색 (With. paginaition)
+//    @GetMapping("/search")
+//    public Map<String, Object> searchStudyByTag(final CommonParams params) {
+//        System.out.println(params.getKeyword()); // 키워드 출력해보기
+//        return studyService.getAllStudies(params);
+//    }
+
     // 스터디 태그 검색
     @GetMapping("/search")
-    public Map<String, Object> searchStudyByTag(final CommonParams params) {
-        System.out.println(params.getKeyword()); // 키워드 출력해보기
-        return studyService.findAllStudies(params);
+    public List<StudyRecruitDto> searchStudyByTag(@RequestParam(value = "keyword", defaultValue = "") String keyword) {
+        System.out.println("=======keyword : " + keyword);
+        return studyService.findStudiesByTag(keyword);
     }
 
     // 스터디 모집글 등록 후 목록 화면으로 이동
     @PostMapping("/register")
-    public void registerStudy(@RequestBody StudySaveRequestDto studyReq,
+    public String registerStudy(@RequestBody StudySaveRequestDto studyReq,
                               HttpServletRequest request,
-                              HttpServletResponse response) throws IOException {
+                              HttpServletResponse response){
         // 로그인 한 사용자 이메일 추출
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
 
@@ -70,8 +84,10 @@ public class StudyController {
         studyService.registerStudy(studyReq, user);
 
         //목록 화면으로 리다이렉트
-        String redirect_url = "http://localhost:8080/api/studies?page=1&pageSize=10";
-        response.sendRedirect(redirect_url);
+//        String redirect_url = "http://localhost:8080/studies";
+//        response.sendRedirect(redirect_url);
+
+        return "success";
     }
 
     // 스터디 모집글 삭제

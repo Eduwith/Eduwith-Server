@@ -4,14 +4,17 @@ import com.example.eduwithbe.Study.Dto.StudySaveRequestDto;
 import com.example.eduwithbe.Study.Dto.StudyRecruitDto;
 import com.example.eduwithbe.paging.CommonParams;
 
+import java.util.List;
 import java.util.Map;
 
 public interface StudyService {
-//    List<StudyResponseDto> getAllStudies(); // 스터디 모집글 전체 조회
+//    Map<String, Object> getAllStudies(CommonParams params);
 
-    Map<String, Object> findAllStudies(CommonParams params);
+    List<StudyRecruitDto> findAllStudies(); // 스터디 모집글 전체 조회
 
     StudyRecruitDto findStudyByNo(final Long stdNo); // 특정 스터디 모집글 조회
+
+    List<StudyRecruitDto> findStudiesByTag(String keyword);     // 스터디 태그 검색
 
     String saveStudyApply(String email, Long s_no); // 스터디 지원하기
 
