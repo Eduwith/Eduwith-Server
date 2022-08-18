@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface StudyRepository extends JpaRepository<StudyRecruitmentEntity, Long> {
+    List<StudyRecruitmentEntity> findByTagContaining(String keyword);
 
     // email이 작성한 모집글 조회
     @Query(value = "SELECT s FROM StudyRecruitmentEntity s where s.user.email = :email")

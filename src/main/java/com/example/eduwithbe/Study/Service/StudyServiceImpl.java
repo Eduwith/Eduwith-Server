@@ -9,8 +9,6 @@ import com.example.eduwithbe.Study.Repository.StudyApplyRepository;
 import com.example.eduwithbe.Study.Repository.StudyRepository;
 import com.example.eduwithbe.Study.Repository.StudyScrapRepository;
 import com.example.eduwithbe.mappers.StudyMapper;
-import com.example.eduwithbe.paging.CommonParams;
-import com.example.eduwithbe.paging.Pagination;
 import com.example.eduwithbe.user.domain.UserEntity;
 import com.example.eduwithbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -31,31 +30,40 @@ public class StudyServiceImpl implements StudyService{
     private final StudyMapper studyMapper;
 
 
+//    @Override
+//// 모든 스터디 모집글 조회 & 태그 검색 (With. Pagination)
+//    public Map<String, Object> getAllStudies(CommonParams params) {
+//        // 모집글 수 조회
+//        int count = studyMapper.count(params);
+//
+//        // 등록된 모집글이 없는 경우, 로직 종료
+//        if(count < 1) {
+//            return Collections.emptyMap();
+//        }
+//
+//        // 페이지네이션 정보 계산
+//        Pagination pagination = new Pagination(count, params);
+//        params.setPagination(pagination);
+//
+//        // 모집글 리스트 조회
+//        List<StudyRecruitDto> list = studyMapper.findAll(params);
+//
+//        // 데이터 반환
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("params", params);
+//        response.put("list", list);
+//        return response;
+//    }
+
+
+    // 전체 목록 조회
     @Override
-    // 모든 스터디 모집글 조회 & 태그 검색 (With. Pagination)
-    public Map<String, Object> findAllStudies(CommonParams params) {
-        // 모집글 수 조회
-        int count = studyMapper.count(params);
-
-        // 등록된 모집글이 없는 경우, 로직 종료
-        if(count < 1) {
-            return Collections.emptyMap();
-        }
-
-        // 페이지네이션 정보 계산
-        Pagination pagination = new Pagination(count, params);
-        params.setPagination(pagination);
-
-        // 모집글 리스트 조회
-        List<StudyRecruitDto> list = studyMapper.findAll(params);
-
-        // 데이터 반환
-        Map<String, Object> response = new HashMap<>();
-        response.put("params", params);
-        response.put("list", list);
-        return response;
+    public List<StudyRecruitDto> findAllStudies() {
+        List<StudyRecruitmentEntity> studyList = studyRepository.findAll();
+        return studyList.stream()
+                .map(StudyRecruitDto::new)
+                .collect(Collectors.toList());
     }
-
 //    @Override
 //    public List<StudyResponseDto> getAllStudies() {
 //        PageRequest pageRequest = PageRequest.of(0,6);
@@ -67,6 +75,15 @@ public class StudyServiceImpl implements StudyService{
     public StudyRecruitDto findStudyByNo(final Long stdNo) {
         StudyRecruitmentEntity entity = studyRepository.findById(stdNo).orElseThrow(() -> new IllegalArgumentException("해당 글이 존재하지 않습니다."));
         return new StudyRecruitDto(entity);
+    }
+
+    // 스터디 태그 검색
+    @Override
+    public List<StudyRecruitDto> findStudiesByTag(String keyword) {
+        List<StudyRecruitmentEntity> studyRecruitmentEntities = studyRepository.findByTagContaining(keyword);
+        return studyRecruitmentEntities.stream()
+                .map(StudyRecruitDto::new)
+                .collect(Collectors.toList());
     }
 
     @Override
