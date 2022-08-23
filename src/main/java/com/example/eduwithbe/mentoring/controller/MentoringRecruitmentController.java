@@ -1,29 +1,27 @@
 package com.example.eduwithbe.mentoring.controller;
 
 import com.example.eduwithbe.mentoring.dto.*;
-import com.example.eduwithbe.mentoring.service.MentoringApplyService;
 import com.example.eduwithbe.mentoring.service.MentoringRecruitmentService;
 import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
 import com.example.eduwithbe.security.JwtTokenProvider;
-import com.example.eduwithbe.user.domain.UserEntity;
-import com.example.eduwithbe.user.repository.UserRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
+@Api(tags = {"MentoringRecruitController"})
 @RequestMapping(value = "/mentoring")
 @RequiredArgsConstructor
 @RestController
 public class MentoringRecruitmentController {
 
     private final MentoringRecruitmentService mentoringService;
-    private final UserRepository userRepository;
-    private final MentoringApplyService mentoringApplyService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    //멘토링 작성 글 저장
+    @ApiOperation(value = "멘토링 모집글 작성")
     @PostMapping(value = "/recruitment")
     public ResultResponse saveMentoringRecruit(HttpServletRequest request, @RequestBody MentoringRecruitSaveDto saveBoardDto) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
@@ -32,7 +30,7 @@ public class MentoringRecruitmentController {
         return new ResultResponse();
     }
 
-    //멘토링 작성 글 하나 찾기
+    @ApiOperation(value = "멘토링 모집글 상세 조회")
     @GetMapping(value = "/{m_no}")
     public MentoringRecruitDto findOneMentoringRecruit(@PathVariable Long m_no) {
         MentoringRecruitmentEntity mentoringRecruitment = mentoringService.findByMentoringRecruitId(m_no);
@@ -40,25 +38,25 @@ public class MentoringRecruitmentController {
         return MentoringRecruitDto.builder().me(mentoringRecruitment).build();
     }
 
-    //멘토링 작성 글 전체 찾기
+    @ApiOperation(value = "멘토링 모집글 전체 리스트")
     @GetMapping(value = "/list")
     public List<MentoringRecruitListDto> findAllMentoring() {
         return mentoringService.findAllMentoringRecruitment();
     }
 
-    //멘토링 작성 글 - 멘토
+    @ApiOperation(value = "멘토링 모집글 멘토 리스트")
     @GetMapping(value = "/mentor")
     public List<MentoringRecruitListDto> findAllMentoringMentor() {
         return mentoringService.findByMentoringMentor();
     }
 
-    //멘토링 작성 글 - 멘티
+    @ApiOperation(value = "멘토링 모집글 멘티 리스트")
     @GetMapping(value = "/mentee")
     public List<MentoringRecruitListDto> findAllMentoringMentee() {
         return mentoringService.findByMentoringMentee();
     }
 
-    //멘토링 작성 글 수정
+    @ApiOperation(value = "멘토링 모집글 수정")
     @PatchMapping(value = "/{m_no}")
     public ResultResponse updateMentoringRecruit(@PathVariable Long m_no, @RequestBody MentoringRecruitUpdateDto updateDto) {
         mentoringService.updateMentoringRecruitment(m_no, updateDto);
@@ -66,7 +64,7 @@ public class MentoringRecruitmentController {
         return new ResultResponse();
     }
 
-    //멘토링 작성 글 삭제
+    @ApiOperation(value = "멘토링 모집글 삭제")
     @DeleteMapping(value = "/{m_no}")
     public ResultResponse deleteBoard(@PathVariable Long m_no) {
         MentoringRecruitmentEntity mentoringRecruitment = mentoringService.findByMentoringRecruitId(m_no);
@@ -75,14 +73,14 @@ public class MentoringRecruitmentController {
         return new ResultResponse();
     }
 
-    //키워드 검색
+    @ApiOperation(value = "멘토링 모집글 키워드 검색")
     @GetMapping("/search/{keyword}")
     public List<MentoringRecruitListDto> findByTitleContaining(@PathVariable String keyword) {
         return mentoringService.findByTitleContaining(keyword);
     }
 
 
-    //마이페이지 멘토 멘티 글
+    @ApiOperation(value = "마이페이지 모집글 리스트")
     @GetMapping("/mypage/mentoring")
     public MentoringMentorMenteeDto findByMentorAndMentee(HttpServletRequest request){
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
@@ -92,9 +90,9 @@ public class MentoringRecruitmentController {
         return MentoringMentorMenteeDto.builder().mentor(mentor).mentee(mentee).build();
     }
 
-    //필터 검색
+    @ApiOperation(value = "멘토링 모집글 필터 검색")
     @GetMapping("/search/filter")
-    public List<MentoringRecruitListDto> searchByFilter(@RequestParam(required = false, defaultValue = "") String field, @RequestParam(required = false, defaultValue = "") String region, @RequestParam(required = false, defaultValue = "1") int m_period, @RequestParam(required = false, defaultValue = "") String way){
+    public List<MentoringRecruitListDto> searchByFilter(@RequestParam(required = false, defaultValue = "") String field, @RequestParam(required = false, defaultValue = "") String region, @RequestParam(required = false, defaultValue = "0") int m_period, @RequestParam(required = false, defaultValue = "") String way){
         List<String> fieldList;
         if(Objects.equals(field, "")){
             fieldList = List.of("진로", "교육", "문화예술스포츠", "기타");
@@ -137,7 +135,7 @@ public class MentoringRecruitmentController {
         }
 
         List<Integer> periodList;
-        if(Objects.equals(m_period, "")){
+        if(Objects.equals(m_period, 0)){
             periodList = List.of(1, 3, 6, 12);
         }else{
             periodList = List.of(m_period);

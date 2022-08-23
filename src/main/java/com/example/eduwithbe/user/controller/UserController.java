@@ -8,13 +8,11 @@ import com.example.eduwithbe.user.service.UserAttendService;
 import com.example.eduwithbe.user.service.UserService;
 import com.example.eduwithbe.user.domain.UserEntity;
 import com.example.eduwithbe.user.repository.UserRepository;
-import com.example.eduwithbe.security.JwtService;
 import com.example.eduwithbe.security.JwtTokenProvider;
 import com.example.eduwithbe.security.Token;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -33,22 +31,12 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final UserAttendRepository userAttendRepository;
+    private final UserService us;
+    private final UserAttendService uas;
 
-    @Autowired
-    private UserService us;
-
-    @Autowired
-    private UserAttendService uas;
-
-    @Autowired
-    private JwtService jwtService;
-
-
-    // 회원가입
     @ApiOperation(value = "회원가입")
     @PostMapping("/join")
     public @ResponseBody Map<String, Object> join(@RequestBody UserSaveDTO user) {
-        //user.setRoles(Collections.singletonList("ROLE_USER"));
         user.setPwd(passwordEncoder.encode(user.getPwd()));
         userRepository.save(UserEntity.builder()
                 .email(user.getEmail())
@@ -57,7 +45,7 @@ public class UserController {
                 .age(user.getAge())
                 .address(user.getAddress())
                 .pwd(passwordEncoder.encode(user.getPwd()))
-                .roles(Collections.singletonList("ROLE_USER")) // 최초 가입시 USER 로 설정
+                .roles(Collections.singletonList("ROLE_USER"))
                 .build());
 
         Map<String, Object> response;
@@ -65,7 +53,7 @@ public class UserController {
         return response;
     }
 
-    //회원가입 체크
+    @ApiOperation(value = "이메일 중복 체크")
     @PostMapping("/join/check")
     public ResultResponse joinCheck(@RequestBody UserJoinCheckDto userJoinCheckDto) {
         ResultResponse resultResponse = new ResultResponse();
@@ -76,7 +64,7 @@ public class UserController {
         return resultResponse;
     }
 
-    // 로그인
+    @ApiOperation(value = "로그인")
     @PostMapping("/login")
     public Token login(@RequestBody @Validated UserLoginDTO user) {
 //        log.info("user email = {}", user.get("userEmail"));
@@ -86,12 +74,11 @@ public class UserController {
         if (!passwordEncoder.matches(user.getPwd(), userEntity.getPwd())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-        Token tokenDto = jwtTokenProvider.createAccessToken(userEntity.getUsername(), userEntity.getName(), userEntity.getRoles());
 
-        return tokenDto;
+        return jwtTokenProvider.createAccessToken(userEntity.getUsername(), userEntity.getName(), userEntity.getRoles());
     }
 
-    //로그인 체크
+    @ApiOperation(value = "로그인 시 토큰 체크")
     @PostMapping("/loginCheck")
     public Map<String, String> check(HttpServletRequest request) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
@@ -100,11 +87,12 @@ public class UserController {
 
         Map<String, String> map = new ManagedMap<>();
         map.put("email", user);
-        map.put("name" , userEntity.get().getName());
+
+        userEntity.ifPresent(entity -> map.put("name", entity.getName()));
         return map;
     }
 
-    //출석체크 조회
+    @ApiOperation(value = "출석 체크 조회")
     @GetMapping("/attendance")
     public UserGetAttendDto getUserPoint(HttpServletRequest request){
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
@@ -118,7 +106,7 @@ public class UserController {
         return new UserGetAttendDto(stamp, point, day, userAttendanceEntities);
     }
 
-    //출석체크 반영
+    @ApiOperation(value = "출석 체크 반영")
     @PatchMapping("/attendance")
     public UserUpdateAttendanceDto updateUserPoint(HttpServletRequest request){
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
@@ -137,7 +125,7 @@ public class UserController {
         return new UserUpdateAttendanceDto(stamp, point, day);
     }
 
-    //회원수정
+    @ApiOperation(value = "회원 수정")
     @PatchMapping(value = "/edit")
     public ResultResponse updateMentoringRecruit(HttpServletRequest request, @RequestBody UserUpdateDto updateDto) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
@@ -157,7 +145,7 @@ public class UserController {
         return new ResultResponse();
     }
 
-    //멘토링 모집글 스크랩
+    @ApiOperation(value = "멘토링 모집글 스크랩")
     @PostMapping(value = "/scrap/mentoring")
     public ResultResponse saveMentoringRecruit(HttpServletRequest request, @RequestBody Long m_no) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
@@ -166,7 +154,7 @@ public class UserController {
         return new ResultResponse();
     }
 
-    //회원탈퇴
+    @ApiOperation(value = "회원 탈퇴")
     @DeleteMapping(value = "/withdrawal")
     public ResultResponse saveMentoringApplyRefuse(HttpServletRequest request) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
@@ -176,7 +164,7 @@ public class UserController {
         return new ResultResponse();
     }
 
-    //유저-마이페이지-프로필수정
+    @ApiOperation(value = "프로필정보 보기")
     @GetMapping(value = "/mypage")
     public UserInfoDto getMyPage(HttpServletRequest request) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
