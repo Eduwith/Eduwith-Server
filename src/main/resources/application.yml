@@ -5,6 +5,13 @@ spring:
     hiddenmethod:
         filter:
           enabled: true
+  application:
+    name: UserService
+  main:
+    allow-circular-references: true
+  jpa:
+    generate-ddl: true
+
 
 
 
