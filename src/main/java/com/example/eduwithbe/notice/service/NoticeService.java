@@ -14,7 +14,7 @@ public interface NoticeService {
 
     List<NoticeGetDto> findByEmailNotice(String email);
 
-    String updateNotice(Long notice_no);
+    String updateNotice(String email, Long notice_no);
 
     String deleteNotice(NoticeEntity noticeEntity);
 

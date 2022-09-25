@@ -32,12 +32,13 @@ public class NoticeController {
 
     @ApiOperation(value = "알림 읽음 확인")
     @PatchMapping(value = "/{notice_no}")
-    public ResultResponse patchNoticeByEmail(@PathVariable Long notice_no) {
-        String s =  noticeService.updateNotice(notice_no);
+    public ResultResponse patchNoticeByEmail(HttpServletRequest request, @PathVariable Long notice_no) {
+        String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
+        String s =  noticeService.updateNotice(user, notice_no);
 
         ResultResponse resultResponse = new ResultResponse();
         if(Objects.equals(s, "OK")) resultResponse.setResult("SUCCESS");
-        else resultResponse.setResult("FAILURE");
+        else resultResponse.setResult("FAILURE : Not the same email");
 
         return resultResponse;
     }

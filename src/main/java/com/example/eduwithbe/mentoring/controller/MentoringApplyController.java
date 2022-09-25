@@ -50,6 +50,7 @@ public class MentoringApplyController {
     public ResultResponse saveMentoringApply(HttpServletRequest request, @PathVariable Long m_no) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         String s = mentoringApplyService.saveMentoringApply(user, m_no);
+        UserEntity userEntity = userRepository.findByEmail(user).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + user));
 
         ResultResponse resultResponse = new ResultResponse();
 
@@ -64,7 +65,8 @@ public class MentoringApplyController {
             } else role = "멘티";
 
             String finalRole = role;
-            mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setTitle(mentoringRecruitmentEntity.getTitle() + " 멘토링 - 방금 새로운 " + finalRole + "가 지원했어요."));
+            mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setTitle("[멘토링] "+mentoringRecruitmentEntity.getTitle()
+                    + " - 방금 새로운 " + finalRole + " " +userEntity.getName()+ "님이 지원했어요."));
             mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setUser(mentoringRecruitmentEntity.getUser()));
             noticeSaveDto.setField("Mentoring");
             noticeSaveDto.setRead("N");
@@ -86,7 +88,7 @@ public class MentoringApplyController {
             NoticeSaveDto noticeSaveDto = new NoticeSaveDto();
 
             String finalRole = getRole(mentoringRecruitment);
-            mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setTitle(mentoringRecruitmentEntity.getTitle() + " 멘토링 - " + finalRole + "신청이 수락되었어요."));
+            mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setTitle("[멘토링] "+mentoringRecruitmentEntity.getTitle() + " - " + finalRole + "신청이 수락되었어요."));
             noticeSaveDto.setUser(userEntity);
             noticeSaveDto.setField("Mentoring");
             noticeSaveDto.setRead("N");
