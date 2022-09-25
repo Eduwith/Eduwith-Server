@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
@@ -40,7 +39,7 @@ public class MentoringApplyController {
 
     @ApiOperation(value = "멘토링 신청 리스트")
     @GetMapping("/mypage/apply")
-    public List<MentoringApplyEmailDto> findByApplyEmail(HttpServletRequest request){
+    public List<MentoringApplyEmailDto> findByApplyEmail(HttpServletRequest request) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         return mentoringApplyService.findByEmail(user);
     }
@@ -50,25 +49,30 @@ public class MentoringApplyController {
     public ResultResponse saveMentoringApply(HttpServletRequest request, @PathVariable Long m_no) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         String s = mentoringApplyService.saveMentoringApply(user, m_no);
+        UserEntity userEntity = userRepository.findByEmail(user).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + user));
 
-        if(Objects.equals(s, "OK")){
+        ResultResponse resultResponse = new ResultResponse();
+
+        if (Objects.equals(s, "OK")) {
             Optional<MentoringRecruitmentEntity> mentoringRecruitment = mentoringRecruitmentRepository.findById(m_no);
 
             String role = "";
             NoticeSaveDto noticeSaveDto = new NoticeSaveDto();
-            if(mentoringRecruitment.isPresent())
-            if(Objects.equals(mentoringRecruitment.get().getRole(), "O")){
-                role = "멘토";
-            } else role = "멘티";
+            if (mentoringRecruitment.isPresent())
+                if (Objects.equals(mentoringRecruitment.get().getRole(), "O")) {
+                    role = "멘토";
+                } else role = "멘티";
 
             String finalRole = role;
-            mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setTitle(mentoringRecruitmentEntity.getTitle() + " 멘토링 - 방금 새로운 " + finalRole + "가 지원했어요."));
+            mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setTitle("[멘토링] " + mentoringRecruitmentEntity.getTitle()
+                    + " - 방금 새로운 " + finalRole + " " + userEntity.getName() + "님이 지원했어요."));
             mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setUser(mentoringRecruitmentEntity.getUser()));
             noticeSaveDto.setField("Mentoring");
             noticeSaveDto.setRead("N");
             noticeService.saveNotice(noticeSaveDto);
-        }
-        return new ResultResponse();
+            resultResponse.setResult("SUCCESS");
+        } else resultResponse.setResult("FAILURE : Same email as author");
+        return resultResponse;
     }
 
     @ApiOperation(value = "멘토링 모집 신청 수락")
@@ -78,12 +82,12 @@ public class MentoringApplyController {
         String s = mentoringService.saveMentoring(user, m_no, apply_no);
         UserEntity userEntity = userRepository.findByEmail(user).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + user));
 
-        if(Objects.equals(s, "OK")){
+        if (Objects.equals(s, "OK")) {
             Optional<MentoringRecruitmentEntity> mentoringRecruitment = mentoringRecruitmentRepository.findById(m_no);
             NoticeSaveDto noticeSaveDto = new NoticeSaveDto();
 
             String finalRole = getRole(mentoringRecruitment);
-            mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setTitle(mentoringRecruitmentEntity.getTitle() + " 멘토링 - " + finalRole + "신청이 수락되었어요."));
+            mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setTitle("[멘토링] " + mentoringRecruitmentEntity.getTitle() + " - " + finalRole + "신청이 수락되었어요."));
             noticeSaveDto.setUser(userEntity);
             noticeSaveDto.setField("Mentoring");
             noticeSaveDto.setRead("N");
@@ -99,7 +103,7 @@ public class MentoringApplyController {
         String s = mentoringService.deleteMentoring(apply_no);
         UserEntity userEntity = userRepository.findByEmail(user).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + user));
 
-        if(Objects.equals(s, "OK")){
+        if (Objects.equals(s, "OK")) {
             Optional<MentoringRecruitmentEntity> mentoringRecruitment = mentoringRecruitmentRepository.findById(m_no);
             NoticeSaveDto noticeSaveDto = new NoticeSaveDto();
 
@@ -112,6 +116,40 @@ public class MentoringApplyController {
         }
 
         return new ResultResponse();
+    }
+
+    @ApiOperation(value = "멘토링 모집글 지원 수락 독촉")
+    @PostMapping(value = "/mentoring/{m_no}/apply/{apply_no}/urge")
+    public ResultResponse saveMentoringUrgeNotice(HttpServletRequest request, @PathVariable Long m_no, @PathVariable Long apply_no) {
+        String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
+        UserEntity userEntity = userRepository.findByEmail(user).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + user));
+        Optional<MentoringRecruitmentEntity> mentoringRecruitment = mentoringRecruitmentRepository.findById(m_no);
+        MentoringApplyEntity mentoringApply = mentoringApplyRepository.findById(apply_no).orElseThrow(() -> new IllegalArgumentException("해당 멘토링 지원이 존재하지 않습니다." + apply_no));
+
+        ResultResponse resultResponse = new ResultResponse();
+        System.out.println("=========");
+        System.out.println(user);
+        System.out.println(mentoringApply.getEmail());
+
+        if (Objects.equals(user, mentoringApply.getEmail())) {
+            if(mentoringRecruitment.isPresent()){
+                String role = "";
+                NoticeSaveDto noticeSaveDto = new NoticeSaveDto();
+                if (Objects.equals(mentoringRecruitment.get().getRole(), "O")) {
+                    role = "멘토";
+                } else role = "멘티";
+
+                String finalRole = role;
+                mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setTitle("[멘토링] " + mentoringRecruitmentEntity.getTitle()
+                        + " - " + finalRole + "로 지원하신 " + userEntity.getName() + "님이 지원에 대한 수락/거절을 요청하셨어요."));
+                mentoringRecruitment.ifPresent(mentoringRecruitmentEntity -> noticeSaveDto.setUser(mentoringRecruitmentEntity.getUser()));
+                noticeSaveDto.setField("Mentoring");
+                noticeSaveDto.setRead("N");
+                noticeService.saveNotice(noticeSaveDto);
+                resultResponse.setResult("SUCCESS");
+            } else resultResponse.setResult("FAILURE : Subscription does not exist");
+        } else resultResponse.setResult("FAILURE : Not the same email");
+        return resultResponse;
     }
 
     @ApiOperation(value = "멘토링 모집 신청 취소")
@@ -127,15 +165,15 @@ public class MentoringApplyController {
         Optional<MentoringApplyEntity> mentoringApply = mentoringApplyRepository.findById(apply_no);
 
         Optional<UserEntity> user = Optional.empty();
-        if(mentoringApply.isPresent())
-        user = userRepository.findByEmail(mentoringApply.get().getEmail());
+        if (mentoringApply.isPresent())
+            user = userRepository.findByEmail(mentoringApply.get().getEmail());
 
-        if(user.isPresent())
-        return UserMentoringApplyDetailDTO.builder()
-                .email(user.get().getEmail())
-                .name(user.get().getName())
-                .age(user.get().getAge())
-                .build();
+        if (user.isPresent())
+            return UserMentoringApplyDetailDTO.builder()
+                    .email(user.get().getEmail())
+                    .name(user.get().getName())
+                    .age(user.get().getAge())
+                    .build();
         else return UserMentoringApplyDetailDTO.builder()
                 .email("이메일이 없습니다.")
                 .name("이름이 없습니다.")
@@ -143,11 +181,11 @@ public class MentoringApplyController {
                 .build();
     }
 
-    private String getRole(Optional<MentoringRecruitmentEntity> mentoringRecruitment){
+    private String getRole(Optional<MentoringRecruitmentEntity> mentoringRecruitment) {
         String role = null;
 
-        if(mentoringRecruitment.isPresent())
-            if(Objects.equals(mentoringRecruitment.get().getRole(), "O")){
+        if (mentoringRecruitment.isPresent())
+            if (Objects.equals(mentoringRecruitment.get().getRole(), "O")) {
                 role = "멘토";
             } else role = "멘티";
 

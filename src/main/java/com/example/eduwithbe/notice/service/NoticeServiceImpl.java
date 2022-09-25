@@ -20,6 +20,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,9 +56,13 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     //알림 읽음 표시
-    public String updateNotice(Long notice_no) {
-        noticeRepository.updateNoticeByEmail(notice_no);
-        return "OK";
+    public String updateNotice(String email, Long notice_no) {
+        NoticeEntity noticeEntity = noticeRepository.findById(notice_no).orElseThrow(() -> new IllegalArgumentException("해당 멘토링이 존재하지 않습니다." + notice_no));
+        if(!Objects.equals(email, noticeEntity.getUser().getEmail())) return "NO";
+        else {
+            noticeRepository.updateNoticeByEmail(notice_no);
+            return "OK";
+        }
     }
 
     //알림 하나 삭제
