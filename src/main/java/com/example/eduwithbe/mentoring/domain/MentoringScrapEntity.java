@@ -16,7 +16,7 @@ public class MentoringScrapEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "scrap_no")
-    private Long mentoring_no;
+    private Long scrap_no;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "m_no")

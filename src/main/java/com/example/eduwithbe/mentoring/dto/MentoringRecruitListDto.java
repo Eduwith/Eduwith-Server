@@ -2,8 +2,13 @@ package com.example.eduwithbe.mentoring.dto;
 
 
 import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
+import com.example.eduwithbe.mentoring.domain.MentoringScrapEntity;
 import com.example.eduwithbe.user.domain.UserEntity;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Getter
@@ -21,6 +26,7 @@ public class MentoringRecruitListDto {
     private String keyword;
     private String info;
     private String name;
+    private List<MentoringScrapGetDto> Scrap;
     //private String email;
 
     @Builder
@@ -35,5 +41,8 @@ public class MentoringRecruitListDto {
         this.keyword = me.getKeyword();
         this.info = me.getInfo();
         this.name = me.getName();
+        this.Scrap = me.getMentoringScrap().stream()
+                .map(MentoringScrapGetDto::new)
+                .collect(Collectors.toList());
     }
 }

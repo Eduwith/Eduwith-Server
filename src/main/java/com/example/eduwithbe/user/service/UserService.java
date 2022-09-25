@@ -2,8 +2,11 @@ package com.example.eduwithbe.user.service;
 
 import com.example.eduwithbe.mentoring.domain.MentoringApplyEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
-import com.example.eduwithbe.mentoring.dto.MentoringApplySaveDto;
-import com.example.eduwithbe.mentoring.repository.MentoringRecruitScrapRepositoty;
+import com.example.eduwithbe.mentoring.domain.MentoringScrapEntity;
+import com.example.eduwithbe.mentoring.dto.MentoringApplyEmailDto;
+import com.example.eduwithbe.mentoring.dto.MentoringScrapGetDto;
+import com.example.eduwithbe.mentoring.dto.MentoringScrapSaveDto;
+import com.example.eduwithbe.mentoring.repository.MentoringRecruitScrapRepository;
 import com.example.eduwithbe.mentoring.repository.MentoringRecruitmentRepository;
 import com.example.eduwithbe.user.domain.UserEntity;
 import com.example.eduwithbe.user.dto.UserSaveDTO;
@@ -18,7 +21,9 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -31,7 +36,7 @@ public class UserService {
     private final MentoringRecruitmentRepository mrr;
 
     @Autowired
-    private final MentoringRecruitScrapRepositoty msr;
+    private final MentoringRecruitScrapRepository msr;
 
     SimpleDateFormat format = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:sss");
     Date time = new Date();
@@ -77,17 +82,34 @@ public class UserService {
         UserEntity userEntity = ur.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + email));
         MentoringRecruitmentEntity mentoringRecruitment = mrr.findById(m_no).orElseThrow(() -> new IllegalArgumentException("해당 멘토링이 존재하지 않습니다." + m_no));
 
-        MentoringApplySaveDto mentoringApplySaveDto = new MentoringApplySaveDto();
+        MentoringScrapSaveDto mentoringScrapSaveDto = new MentoringScrapSaveDto();
 
-        mentoringApplySaveDto.setEmail(userEntity.getEmail());
-        mentoringApplySaveDto.setName(userEntity.getName());
-        mentoringApplySaveDto.setM_no(mentoringRecruitment);
+        mentoringScrapSaveDto.setUser(userEntity);
+        mentoringScrapSaveDto.setM_no(mentoringRecruitment);
 
-        MentoringApplyEntity apply = mentoringApplySaveDto.toEntity();
-        //msr.save(apply);
+        MentoringScrapEntity scrap = mentoringScrapSaveDto.toEntity();
+        msr.save(scrap);
 
         //MentoringApplyEntity mentoringApply = mr.save(dto.toEntity());
         return "OK";
+    }
+
+    //유저 멘토링 스크랩 리스트
+    public List<MentoringScrapGetDto> findByEmailScrap(String email) {
+
+        List<MentoringScrapEntity> mentoringScrapEntity = msr.findByEmailMentoringScrap(email);
+
+        return mentoringScrapEntity.stream()
+                .map(MentoringScrapGetDto::new)
+                .collect(Collectors.toList());
+    }
+
+    //유저 멘토링 스크랩 취소
+    public String deleteMentoringScrap(String email, Long m_no) {
+        MentoringScrapEntity mentoringScrapEntity = msr.findByEmailAndMNoMentoringScrap(email, m_no);
+        msr.delete(mentoringScrapEntity);
+
+        return "SUCCESS";
     }
 
     public UserEntity getUserFromAuth(){

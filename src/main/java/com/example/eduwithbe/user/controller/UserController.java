@@ -1,6 +1,10 @@
 package com.example.eduwithbe.user.controller;
 
+import com.example.eduwithbe.mentoring.domain.MentoringScrapEntity;
+import com.example.eduwithbe.mentoring.dto.MentoringScrapGetDto;
+import com.example.eduwithbe.mentoring.dto.MentoringScrapMNoDto;
 import com.example.eduwithbe.mentoring.dto.ResultResponse;
+import com.example.eduwithbe.mentoring.repository.MentoringRecruitScrapRepository;
 import com.example.eduwithbe.user.domain.UserAttendanceEntity;
 import com.example.eduwithbe.user.dto.*;
 import com.example.eduwithbe.user.repository.UserAttendRepository;
@@ -33,6 +37,7 @@ public class UserController {
     private final UserAttendRepository userAttendRepository;
     private final UserService us;
     private final UserAttendService uas;
+    private final MentoringRecruitScrapRepository scrapRepository;
 
     @ApiOperation(value = "회원가입")
     @PostMapping("/join")
@@ -147,11 +152,26 @@ public class UserController {
 
     @ApiOperation(value = "멘토링 모집글 스크랩")
     @PostMapping(value = "/scrap/mentoring")
-    public ResultResponse saveMentoringRecruit(HttpServletRequest request, @RequestBody Long m_no) {
+    public ResultResponse saveMentoringRecruit(HttpServletRequest request, @RequestBody MentoringScrapMNoDto m_no) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
-        us.saveMentoringRecruitScrap(user, m_no);
+        us.saveMentoringRecruitScrap(user, m_no.getM_no());
 
         return new ResultResponse();
+    }
+
+    @ApiOperation(value = "멘토링 모집글 스크랩 취소")
+    @DeleteMapping(value = "/scrap/mentoring/{m_no}")
+    public ResultResponse delMentoringRecruit(HttpServletRequest request, @PathVariable Long m_no) {
+        String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
+
+        return new ResultResponse(us.deleteMentoringScrap(user, m_no));
+    }
+
+    @ApiOperation(value = "멘토링 모집글 스크랩 리스트")
+    @GetMapping(value = "/scrap/mentoring")
+    public List<MentoringScrapGetDto> getMentoringRecruit(HttpServletRequest request) {
+        String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
+        return us.findByEmailScrap(user);
     }
 
     @ApiOperation(value = "회원 탈퇴")
