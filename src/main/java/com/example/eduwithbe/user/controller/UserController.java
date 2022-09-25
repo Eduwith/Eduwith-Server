@@ -1,6 +1,5 @@
 package com.example.eduwithbe.user.controller;
 
-import com.example.eduwithbe.mentoring.domain.MentoringScrapEntity;
 import com.example.eduwithbe.mentoring.dto.MentoringScrapGetDto;
 import com.example.eduwithbe.mentoring.dto.MentoringScrapMNoDto;
 import com.example.eduwithbe.mentoring.dto.ResultResponse;

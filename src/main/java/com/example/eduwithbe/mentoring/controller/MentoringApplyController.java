@@ -51,6 +51,8 @@ public class MentoringApplyController {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         String s = mentoringApplyService.saveMentoringApply(user, m_no);
 
+        ResultResponse resultResponse = new ResultResponse();
+
         if(Objects.equals(s, "OK")){
             Optional<MentoringRecruitmentEntity> mentoringRecruitment = mentoringRecruitmentRepository.findById(m_no);
 
@@ -67,8 +69,9 @@ public class MentoringApplyController {
             noticeSaveDto.setField("Mentoring");
             noticeSaveDto.setRead("N");
             noticeService.saveNotice(noticeSaveDto);
-        }
-        return new ResultResponse();
+            resultResponse.setResult("SUCCESS");
+        } else resultResponse.setResult("FAILURE : Same email as author");
+        return resultResponse;
     }
 
     @ApiOperation(value = "멘토링 모집 신청 수락")

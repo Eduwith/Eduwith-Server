@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -39,18 +40,22 @@ public class MentoringApplyServiceImpl implements MentoringApplyService {
         UserEntity userEntity = ur.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + email));
         MentoringRecruitmentEntity mentoringRecruitment = mrr.findById(m_no).orElseThrow(() -> new IllegalArgumentException("해당 멘토링이 존재하지 않습니다." + m_no));
 
-        MentoringApplySaveDto mentoringApplySaveDto = new MentoringApplySaveDto();
+        if(Objects.equals(email, userEntity.getEmail())) return "NO";
 
-        mentoringApplySaveDto.setEmail(userEntity.getEmail());
-        mentoringApplySaveDto.setName(userEntity.getName());
-        mentoringApplySaveDto.setAge(userEntity.getAge());
-        mentoringApplySaveDto.setM_no(mentoringRecruitment);
+        else {
+            MentoringApplySaveDto mentoringApplySaveDto = new MentoringApplySaveDto();
 
-        MentoringApplyEntity apply = mentoringApplySaveDto.toEntity();
-        mr.save(apply);
+            mentoringApplySaveDto.setEmail(userEntity.getEmail());
+            mentoringApplySaveDto.setName(userEntity.getName());
+            mentoringApplySaveDto.setAge(userEntity.getAge());
+            mentoringApplySaveDto.setM_no(mentoringRecruitment);
 
-        //MentoringApplyEntity mentoringApply = mr.save(dto.toEntity());
-        return "OK";
+            MentoringApplyEntity apply = mentoringApplySaveDto.toEntity();
+            mr.save(apply);
+
+            //MentoringApplyEntity mentoringApply = mr.save(dto.toEntity());
+            return "OK";
+        }
     }
 
     //멘토링 신청 목록
