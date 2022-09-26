@@ -138,7 +138,7 @@ public class UserController {
 
         ResultResponse resultResponse = new ResultResponse();
         if(!passwordEncoder.matches(updateDto.getPwd(), userEntity.getPassword())) {
-            resultResponse.setResult("잘못된 비밀번호입니다.");
+            resultResponse.setResult("FAILURE"); //잘못된 비밀번호입니다.
         }
         else {
             resultResponse.setResult("SUCCESS");

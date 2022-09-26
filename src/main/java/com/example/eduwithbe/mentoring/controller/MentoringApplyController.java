@@ -71,7 +71,8 @@ public class MentoringApplyController {
             noticeSaveDto.setRead("N");
             noticeService.saveNotice(noticeSaveDto);
             resultResponse.setResult("SUCCESS");
-        } else resultResponse.setResult("FAILURE : Same email as author");
+        } else if(Objects.equals(s, "NO")) resultResponse.setResult("FAILURE"); //Same email as author
+        else resultResponse.setResult("FAILURE"); // Already supported
         return resultResponse;
     }
 
@@ -127,9 +128,6 @@ public class MentoringApplyController {
         MentoringApplyEntity mentoringApply = mentoringApplyRepository.findById(apply_no).orElseThrow(() -> new IllegalArgumentException("해당 멘토링 지원이 존재하지 않습니다." + apply_no));
 
         ResultResponse resultResponse = new ResultResponse();
-        System.out.println("=========");
-        System.out.println(user);
-        System.out.println(mentoringApply.getEmail());
 
         if (Objects.equals(user, mentoringApply.getEmail())) {
             if(mentoringRecruitment.isPresent()){
@@ -147,8 +145,8 @@ public class MentoringApplyController {
                 noticeSaveDto.setRead("N");
                 noticeService.saveNotice(noticeSaveDto);
                 resultResponse.setResult("SUCCESS");
-            } else resultResponse.setResult("FAILURE : Subscription does not exist");
-        } else resultResponse.setResult("FAILURE : Not the same email");
+            } else resultResponse.setResult("FAILURE"); //Subscription does not exist
+        } else resultResponse.setResult("FAILURE"); //Not the same email
         return resultResponse;
     }
 
