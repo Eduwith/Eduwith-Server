@@ -71,8 +71,8 @@ public class MentoringApplyController {
             noticeSaveDto.setRead("N");
             noticeService.saveNotice(noticeSaveDto);
             resultResponse.setResult("SUCCESS");
-        } else if(Objects.equals(s, "NO")) resultResponse.setResult("FAILURE : Same email as author");
-        else resultResponse.setResult("FAILURE : Already supported");
+        } else if(Objects.equals(s, "NO")) resultResponse.setResult("FAILURE"); //Same email as author
+        else resultResponse.setResult("FAILURE"); // Already supported
         return resultResponse;
     }
 
@@ -145,8 +145,8 @@ public class MentoringApplyController {
                 noticeSaveDto.setRead("N");
                 noticeService.saveNotice(noticeSaveDto);
                 resultResponse.setResult("SUCCESS");
-            } else resultResponse.setResult("FAILURE : Subscription does not exist");
-        } else resultResponse.setResult("FAILURE : Not the same email");
+            } else resultResponse.setResult("FAILURE"); //Subscription does not exist
+        } else resultResponse.setResult("FAILURE"); //Not the same email
         return resultResponse;
     }
 

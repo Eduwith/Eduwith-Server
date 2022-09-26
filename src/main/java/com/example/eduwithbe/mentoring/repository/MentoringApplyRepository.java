@@ -13,6 +13,6 @@ public interface MentoringApplyRepository extends JpaRepository<MentoringApplyEn
     @Query("select m from MentoringApplyEntity m where m.email = :email")
     List<MentoringApplyEntity> findByEmail(@Param("email") String email);
 
-    @Query("select m from MentoringApplyEntity m where m.email = :email and m.m_no = :m_no")
+    @Query("select m from MentoringApplyEntity m where m.email = :email and m.m_no.m_no = :m_no")
     List<MentoringApplyEntity> findByEmailAndM_no(@Param("email") String email, @Param("m_no") Long m_no);
 }

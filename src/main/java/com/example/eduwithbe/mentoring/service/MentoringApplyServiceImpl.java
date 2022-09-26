@@ -42,8 +42,6 @@ public class MentoringApplyServiceImpl implements MentoringApplyService {
 
         List<MentoringApplyEntity> list = mr.findByEmailAndM_no(email, m_no);
 
-        System.out.println("=========");
-        System.out.println(list);
         if(!list.isEmpty()) return "OVERLAP";
         else if(Objects.equals(email, mentoringRecruitment.getUser().getEmail())) return "NO";
         else {
