@@ -63,6 +63,9 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL)
     private final List<MentoringEntity> mentoringEntities = new ArrayList<>();
 
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL)
+    private final List<MentoringEntity> mentoringEntities2 = new ArrayList<>();
+
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private final List<UserAttendanceEntity> userAttendanceEntities = new ArrayList<>();

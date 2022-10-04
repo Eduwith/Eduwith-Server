@@ -16,6 +16,7 @@ import java.util.List;
 public class MentoringLogAllListDto {
     private Long mentoring_no;
     private String m_title;
+    private UserMentoringApplyDetailDTO writer;
     private UserMentoringApplyDetailDTO applicant;
     private List<MentoringLogGetIdDto> logList;
 }

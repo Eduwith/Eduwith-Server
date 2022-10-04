@@ -37,10 +37,11 @@ public class MentoringServiceImpl implements MentoringService {
         Optional<UserEntity> user = ur.findByEmail(email);
         MentoringRecruitmentEntity mentoringRecruitment = mrr.findById(m_no).orElseThrow(() -> new IllegalArgumentException("신청 실패: 해당 멘토링이 존재하지 않습니다." + m_no));
         MentoringApplyEntity mentoringApplyRecruitment = mar.findById(apply_no).orElseThrow(() -> new IllegalArgumentException("신청 실패: 해당 신청이 존재하지 않습니다." + apply_no));
+        Optional<UserEntity> applyUser = ur.findByEmail(mentoringApplyRecruitment.getEmail());
 
         MentoringSaveDto mentoringSaveDto = new MentoringSaveDto();
 
-        mentoringSaveDto.setApplicant(mentoringApplyRecruitment.getEmail());
+        mentoringSaveDto.setApplicant(applyUser.get());
         mentoringSaveDto.setM_no(mentoringRecruitment);
         mentoringSaveDto.setWriter(mentoringApplyRecruitment.getM_no().getUser());
 

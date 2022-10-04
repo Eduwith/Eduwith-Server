@@ -50,30 +50,47 @@ public class MentoringLogController {
 
     @ApiOperation(value = "로글 글 전체 리스트")
     @GetMapping(value = "/mentoring/log")
-    public List<MentoringLogAllListDto> findByIdMentoringLog(HttpServletRequest request) {
+    public MentoringLogAllListCoverDto findByIdMentoringLog(HttpServletRequest request) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         UserEntity loginUser = userRepository.findByEmail(user).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + user));
 
         List<MentoringLogAllListDto> mentoringLogAllLists = new ArrayList<>();
+        List<MentoringLogAllListDto> mentoringLogAllLists2 = new ArrayList<>();
 
-        for(int i = 0; i < loginUser.getMentoringEntities().size(); i++) {
-            Optional<MentoringEntity> mentoringEntity = mentoringRepository.findById(loginUser.getMentoringEntities().get(i).getMentoring_no());
-            List<MentoringLogGetIdDto> mentoringLogGetIdDto = new ArrayList<>();
-            UserEntity userEntity = new UserEntity();
-            if(mentoringEntity.isPresent()) {
-                mentoringLogGetIdDto = mentoringLogService.findAllMentoringLog(mentoringEntity.get().getMentoring_no());
-                userEntity = userRepository.findByEmail(mentoringEntity.get().getApplicant()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + mentoringEntity.get().getApplicant()));
-            }
-            UserMentoringApplyDetailDTO mentee = new UserMentoringApplyDetailDTO();
-            mentee.setEmail(userEntity.getEmail());
-            mentee.setAge(userEntity.getAge());
-            mentee.setName(userEntity.getName());
+        List<MentoringEntity> mentoringEntities = mentoringRepository.findByApplicantOrWriterMentor(loginUser.getEmail());
 
-            if(mentoringEntity.isPresent())
-            mentoringLogAllLists.add(new MentoringLogAllListDto(mentoringEntity.get().getMentoring_no(),mentoringEntity.get().getM_no().getTitle(), mentee, mentoringLogGetIdDto));
+        logList(mentoringLogAllLists, mentoringEntities);
+
+        List<MentoringEntity> mentoringEntities2 = mentoringRepository.findByApplicantOrWriterMentee(loginUser.getEmail());
+
+        logList(mentoringLogAllLists2, mentoringEntities2);
+
+        MentoringLogAllListCoverDto mentoringLogAllListCoverDto = new MentoringLogAllListCoverDto();
+        mentoringLogAllListCoverDto.setMentor(mentoringLogAllLists);
+        mentoringLogAllListCoverDto.setMentee(mentoringLogAllLists2);
+
+        return mentoringLogAllListCoverDto;
+    }
+
+    private void logList(List<MentoringLogAllListDto> mentoringLogAllLists, List<MentoringEntity> mentoringEntities) {
+        for (MentoringEntity entity : mentoringEntities) {
+            List<MentoringLogGetIdDto> mentoringLogGetIdDto = mentoringLogService.findAllMentoringLog(entity.getMentoring_no());
+            UserEntity userEntity = userRepository.findByEmail(entity.getWriter().getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + entity.getWriter()));
+            UserEntity userEntity2 = userRepository.findByEmail(entity.getApplicant().getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + entity.getApplicant()));
+
+            UserMentoringApplyDetailDTO writer = new UserMentoringApplyDetailDTO();
+            writer.setEmail(userEntity.getEmail());
+            writer.setAge(userEntity.getAge());
+            writer.setName(userEntity.getName());
+
+            UserMentoringApplyDetailDTO applicant = new UserMentoringApplyDetailDTO();
+            applicant.setEmail(userEntity2.getEmail());
+            applicant.setAge(userEntity2.getAge());
+            applicant.setName(userEntity2.getName());
+
+
+            mentoringLogAllLists.add(new MentoringLogAllListDto(entity.getMentoring_no(), entity.getM_no().getTitle(), writer, applicant, mentoringLogGetIdDto));
         }
-
-        return mentoringLogAllLists;
     }
 
 

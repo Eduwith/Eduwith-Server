@@ -26,11 +26,13 @@ public class MentoringEntity {
     @JoinColumn(name = "m_no")
     private MentoringRecruitmentEntity m_no;
 
-    private String applicant;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer")
+    private UserEntity writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user")
-    private UserEntity writer;
+    @JoinColumn(name = "applicant")
+    private UserEntity applicant;
 
     @JsonIgnore
     @OneToMany(mappedBy = "mentoring_no", cascade = CascadeType.REMOVE, orphanRemoval = true)

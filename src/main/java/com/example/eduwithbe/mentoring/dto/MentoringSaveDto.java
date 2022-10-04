@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MentoringSaveDto {
     private MentoringRecruitmentEntity m_no;
-    private String applicant;
+    private UserEntity applicant;
     private UserEntity writer;
 
     public MentoringEntity toEntity(){

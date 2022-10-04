@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.stream.Collectors;
 
 @Data
 @Getter
@@ -16,12 +17,12 @@ import javax.persistence.ManyToOne;
 public class MentoringApplyEmailDto {
 
     private Long apply_no;
-    private Long m_no;
+    private MentoringRecruitDto m_no;
     private String email;
 
     public MentoringApplyEmailDto(MentoringApplyEntity ma) {
         this.apply_no = ma.getApply_no();
-        this.m_no = ma.getM_no().getM_no();
+        this.m_no = new MentoringRecruitDto(ma.getM_no());
         this.email = ma.getEmail();
     }
 }
