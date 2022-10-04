@@ -7,7 +7,6 @@ import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringScrapEntity;
 import com.example.eduwithbe.notice.domain.NoticeEntity;
 import com.example.eduwithbe.user.dto.UserSaveDTO;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -61,8 +60,11 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final List<NoticeEntity> noticeEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL)
     private final List<MentoringEntity> mentoringEntities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL)
+    private final List<MentoringEntity> mentoringEntities2 = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)

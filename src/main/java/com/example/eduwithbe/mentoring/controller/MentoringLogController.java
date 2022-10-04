@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Api(tags = {"MentoringLogController"})
-@RequestMapping(value = "/mentoring/log")
 @RequiredArgsConstructor
 @RestController
+//@RequestMapping("/mentoring/log")
 public class MentoringLogController {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -31,7 +31,7 @@ public class MentoringLogController {
     private final UserRepository userRepository;
 
     @ApiOperation(value = "로그 글 저장")
-    @PostMapping(value = "/save")
+    @PostMapping(value = "/mentoring/log/save")
     public ResultResponse saveMentoringLog(HttpServletRequest request, @RequestBody MentoringLogSaveDto mentoringLogSaveDto) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         Optional<MentoringEntity> mentoringEntity = mentoringRepository.findById(mentoringLogSaveDto.getMentoring_no());
@@ -41,7 +41,7 @@ public class MentoringLogController {
     }
 
     @ApiOperation(value = "로그 글 상세보기")
-    @GetMapping(value = "/{log_no}")
+    @GetMapping(value = "/mentoring/log/{log_no}")
     public MentoringLogGetIdDto findOneMentoringLog(@PathVariable Long log_no) {
         MentoringLogEntity mentoringLogEntity = mentoringLogService.findByMentoringLogId(log_no);
 
@@ -49,36 +49,53 @@ public class MentoringLogController {
     }
 
     @ApiOperation(value = "로글 글 전체 리스트")
-    @GetMapping(value = "/list")
-    public List<MentoringLogAllList> findByIdMentoringLog(HttpServletRequest request) {
+    @GetMapping(value = "/mentoring/log")
+    public MentoringLogAllListCoverDto findByIdMentoringLog(HttpServletRequest request) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         UserEntity loginUser = userRepository.findByEmail(user).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + user));
 
-        List<MentoringLogAllList> list = new ArrayList<>();
+        List<MentoringLogAllListDto> mentoringLogAllLists = new ArrayList<>();
+        List<MentoringLogAllListDto> mentoringLogAllLists2 = new ArrayList<>();
 
-        for(int i = 0; i < loginUser.getMentoringEntities().size(); i++) {
-            Optional<MentoringEntity> mentoringEntity = mentoringRepository.findById(loginUser.getMentoringEntities().get(i).getMentoring_no());
-            List<MentoringLogGetIdDto> mentoringLogGetIdDto = new ArrayList<>();
-            UserEntity userEntity = new UserEntity();
-            if(mentoringEntity.isPresent()) {
-                mentoringLogGetIdDto = mentoringLogService.findAllMentoringLog(mentoringEntity.get().getMentoring_no());
-                userEntity = userRepository.findByEmail(mentoringEntity.get().getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + mentoringEntity.get().getEmail()));
-            }
-            UserMentoringApplyDetailDTO mentee = new UserMentoringApplyDetailDTO();
-            mentee.setEmail(userEntity.getEmail());
-            mentee.setAge(userEntity.getAge());
-            mentee.setName(userEntity.getName());
+        List<MentoringEntity> mentoringEntities = mentoringRepository.findByApplicantOrWriterMentor(loginUser.getEmail());
 
-            if(mentoringEntity.isPresent())
-            list.add(new MentoringLogAllList(mentoringEntity.get().getMentoring_no(),mentoringEntity.get().getM_no().getTitle(), mentee, mentoringLogGetIdDto));
+        logList(mentoringLogAllLists, mentoringEntities);
+
+        List<MentoringEntity> mentoringEntities2 = mentoringRepository.findByApplicantOrWriterMentee(loginUser.getEmail());
+
+        logList(mentoringLogAllLists2, mentoringEntities2);
+
+        MentoringLogAllListCoverDto mentoringLogAllListCoverDto = new MentoringLogAllListCoverDto();
+        mentoringLogAllListCoverDto.setMentor(mentoringLogAllLists);
+        mentoringLogAllListCoverDto.setMentee(mentoringLogAllLists2);
+
+        return mentoringLogAllListCoverDto;
+    }
+
+    private void logList(List<MentoringLogAllListDto> mentoringLogAllLists, List<MentoringEntity> mentoringEntities) {
+        for (MentoringEntity entity : mentoringEntities) {
+            List<MentoringLogGetIdDto> mentoringLogGetIdDto = mentoringLogService.findAllMentoringLog(entity.getMentoring_no());
+            UserEntity userEntity = userRepository.findByEmail(entity.getWriter().getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + entity.getWriter()));
+            UserEntity userEntity2 = userRepository.findByEmail(entity.getApplicant().getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + entity.getApplicant()));
+
+            UserMentoringApplyDetailDTO writer = new UserMentoringApplyDetailDTO();
+            writer.setEmail(userEntity.getEmail());
+            writer.setAge(userEntity.getAge());
+            writer.setName(userEntity.getName());
+
+            UserMentoringApplyDetailDTO applicant = new UserMentoringApplyDetailDTO();
+            applicant.setEmail(userEntity2.getEmail());
+            applicant.setAge(userEntity2.getAge());
+            applicant.setName(userEntity2.getName());
+
+
+            mentoringLogAllLists.add(new MentoringLogAllListDto(entity.getMentoring_no(), entity.getM_no().getTitle(), writer, applicant, mentoringLogGetIdDto));
         }
-
-        return list;
     }
 
 
     @ApiOperation(value = "로그 글 수정")
-    @PatchMapping(value = "/{log_no}")
+    @PatchMapping(value = "/mentoring/log/{log_no}")
     public ResultResponse updateMentoringLog(@PathVariable Long log_no, @RequestBody MentoringLogUpdateDto updateDto) {
         mentoringLogService.updateMentoringLog(log_no, updateDto);
 
@@ -86,7 +103,7 @@ public class MentoringLogController {
     }
 
     @ApiOperation(value = "로그 글 삭제")
-    @DeleteMapping(value = "/{log_no}")
+    @DeleteMapping(value = "/mentoring/log/{log_no}")
     public ResultResponse deleteMentoringLog(@PathVariable Long log_no) {
         MentoringLogEntity mentoringLogEntity = mentoringLogService.findByMentoringLogId(log_no);
         mentoringLogService.deleteMentoringLog(mentoringLogEntity);

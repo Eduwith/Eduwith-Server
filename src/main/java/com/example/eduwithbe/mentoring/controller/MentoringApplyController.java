@@ -80,6 +80,8 @@ public class MentoringApplyController {
     @PostMapping(value = "/mypage/{m_no}/apply/{apply_no}")
     public ResultResponse saveMentoringApplyAccept(HttpServletRequest request, @PathVariable Long m_no, @PathVariable Long apply_no) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
+        //MentoringApplyEntity mentoringApply = mentoringApplyRepository.findById(apply_no).orElseThrow(() -> new IllegalArgumentException("해당 신청이 존재하지 않습니다." + apply_no));
+
         String s = mentoringService.saveMentoring(user, m_no, apply_no);
         UserEntity userEntity = userRepository.findByEmail(user).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + user));
 

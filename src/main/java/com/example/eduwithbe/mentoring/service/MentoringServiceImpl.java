@@ -3,7 +3,6 @@ package com.example.eduwithbe.mentoring.service;
 import com.example.eduwithbe.mentoring.domain.MentoringApplyEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
-import com.example.eduwithbe.mentoring.dto.MentoringApplySaveDto;
 import com.example.eduwithbe.mentoring.dto.MentoringSaveDto;
 import com.example.eduwithbe.mentoring.repository.MentoringApplyRepository;
 import com.example.eduwithbe.mentoring.repository.MentoringRecruitmentRepository;
@@ -38,12 +37,13 @@ public class MentoringServiceImpl implements MentoringService {
         Optional<UserEntity> user = ur.findByEmail(email);
         MentoringRecruitmentEntity mentoringRecruitment = mrr.findById(m_no).orElseThrow(() -> new IllegalArgumentException("신청 실패: 해당 멘토링이 존재하지 않습니다." + m_no));
         MentoringApplyEntity mentoringApplyRecruitment = mar.findById(apply_no).orElseThrow(() -> new IllegalArgumentException("신청 실패: 해당 신청이 존재하지 않습니다." + apply_no));
+        Optional<UserEntity> applyUser = ur.findByEmail(mentoringApplyRecruitment.getEmail());
 
         MentoringSaveDto mentoringSaveDto = new MentoringSaveDto();
 
-        mentoringSaveDto.setEmail(user.get().getEmail());
+        mentoringSaveDto.setApplicant(applyUser.get());
         mentoringSaveDto.setM_no(mentoringRecruitment);
-        mentoringSaveDto.setUser(user.get());
+        mentoringSaveDto.setWriter(mentoringApplyRecruitment.getM_no().getUser());
 
         MentoringEntity apply = mentoringSaveDto.toEntity();
         mr.save(apply);
