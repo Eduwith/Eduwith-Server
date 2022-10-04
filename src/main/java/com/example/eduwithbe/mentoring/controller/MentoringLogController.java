@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Api(tags = {"MentoringLogController"})
-@RequestMapping(value = "/mentoring/log")
 @RequiredArgsConstructor
 @RestController
+//@RequestMapping("/mentoring/log")
 public class MentoringLogController {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -31,7 +31,7 @@ public class MentoringLogController {
     private final UserRepository userRepository;
 
     @ApiOperation(value = "로그 글 저장")
-    @PostMapping(value = "/save")
+    @PostMapping(value = "/mentoring/log/save")
     public ResultResponse saveMentoringLog(HttpServletRequest request, @RequestBody MentoringLogSaveDto mentoringLogSaveDto) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         Optional<MentoringEntity> mentoringEntity = mentoringRepository.findById(mentoringLogSaveDto.getMentoring_no());
@@ -41,7 +41,7 @@ public class MentoringLogController {
     }
 
     @ApiOperation(value = "로그 글 상세보기")
-    @GetMapping(value = "/{log_no}")
+    @GetMapping(value = "/mentoring/log/{log_no}")
     public MentoringLogGetIdDto findOneMentoringLog(@PathVariable Long log_no) {
         MentoringLogEntity mentoringLogEntity = mentoringLogService.findByMentoringLogId(log_no);
 
@@ -49,12 +49,12 @@ public class MentoringLogController {
     }
 
     @ApiOperation(value = "로글 글 전체 리스트")
-    @GetMapping(value = "/list")
-    public List<MentoringLogAllList> findByIdMentoringLog(HttpServletRequest request) {
+    @GetMapping(value = "/mentoring/log")
+    public List<MentoringLogAllListDto> findByIdMentoringLog(HttpServletRequest request) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         UserEntity loginUser = userRepository.findByEmail(user).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + user));
 
-        List<MentoringLogAllList> list = new ArrayList<>();
+        List<MentoringLogAllListDto> mentoringLogAllLists = new ArrayList<>();
 
         for(int i = 0; i < loginUser.getMentoringEntities().size(); i++) {
             Optional<MentoringEntity> mentoringEntity = mentoringRepository.findById(loginUser.getMentoringEntities().get(i).getMentoring_no());
@@ -62,7 +62,7 @@ public class MentoringLogController {
             UserEntity userEntity = new UserEntity();
             if(mentoringEntity.isPresent()) {
                 mentoringLogGetIdDto = mentoringLogService.findAllMentoringLog(mentoringEntity.get().getMentoring_no());
-                userEntity = userRepository.findByEmail(mentoringEntity.get().getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + mentoringEntity.get().getEmail()));
+                userEntity = userRepository.findByEmail(mentoringEntity.get().getApplicant()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + mentoringEntity.get().getApplicant()));
             }
             UserMentoringApplyDetailDTO mentee = new UserMentoringApplyDetailDTO();
             mentee.setEmail(userEntity.getEmail());
@@ -70,15 +70,15 @@ public class MentoringLogController {
             mentee.setName(userEntity.getName());
 
             if(mentoringEntity.isPresent())
-            list.add(new MentoringLogAllList(mentoringEntity.get().getMentoring_no(),mentoringEntity.get().getM_no().getTitle(), mentee, mentoringLogGetIdDto));
+            mentoringLogAllLists.add(new MentoringLogAllListDto(mentoringEntity.get().getMentoring_no(),mentoringEntity.get().getM_no().getTitle(), mentee, mentoringLogGetIdDto));
         }
 
-        return list;
+        return mentoringLogAllLists;
     }
 
 
     @ApiOperation(value = "로그 글 수정")
-    @PatchMapping(value = "/{log_no}")
+    @PatchMapping(value = "/mentoring/log/{log_no}")
     public ResultResponse updateMentoringLog(@PathVariable Long log_no, @RequestBody MentoringLogUpdateDto updateDto) {
         mentoringLogService.updateMentoringLog(log_no, updateDto);
 
@@ -86,7 +86,7 @@ public class MentoringLogController {
     }
 
     @ApiOperation(value = "로그 글 삭제")
-    @DeleteMapping(value = "/{log_no}")
+    @DeleteMapping(value = "/mentoring/log/{log_no}")
     public ResultResponse deleteMentoringLog(@PathVariable Long log_no) {
         MentoringLogEntity mentoringLogEntity = mentoringLogService.findByMentoringLogId(log_no);
         mentoringLogService.deleteMentoringLog(mentoringLogEntity);

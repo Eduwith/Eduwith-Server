@@ -3,7 +3,6 @@ package com.example.eduwithbe.mentoring.service;
 import com.example.eduwithbe.mentoring.domain.MentoringApplyEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
-import com.example.eduwithbe.mentoring.dto.MentoringApplySaveDto;
 import com.example.eduwithbe.mentoring.dto.MentoringSaveDto;
 import com.example.eduwithbe.mentoring.repository.MentoringApplyRepository;
 import com.example.eduwithbe.mentoring.repository.MentoringRecruitmentRepository;
@@ -41,9 +40,9 @@ public class MentoringServiceImpl implements MentoringService {
 
         MentoringSaveDto mentoringSaveDto = new MentoringSaveDto();
 
-        mentoringSaveDto.setEmail(user.get().getEmail());
+        mentoringSaveDto.setApplicant(mentoringApplyRecruitment.getEmail());
         mentoringSaveDto.setM_no(mentoringRecruitment);
-        mentoringSaveDto.setUser(user.get());
+        mentoringSaveDto.setWriter(mentoringApplyRecruitment.getM_no().getUser());
 
         MentoringEntity apply = mentoringSaveDto.toEntity();
         mr.save(apply);
