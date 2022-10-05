@@ -18,9 +18,9 @@ public interface StudyRepository extends JpaRepository<StudyRecruitmentEntity, L
     @Query(value = "SELECT s FROM StudyRecruitmentEntity s where s.user.email = :email")
     List<StudyRecruitmentEntity> findByUserEmail(@Param("email") String email);
 
-
+    // 내가 스크랩한 스터디 번호 조회
     @Query(value = "select s.s_no from StudyRecruitmentEntity s where s.user.email = :email")
-    List<Long> findStdNumsByMyEmail(@Param("email") String myEmail);
+    List<Long> findStdNumsByMyEmail(@Param("email") String email);
 
     // 스터디 마감(반환값은 update한 레코드 수)
     @Modifying(clearAutomatically = true)

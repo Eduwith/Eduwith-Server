@@ -2,15 +2,13 @@ package com.example.eduwithbe.Study.Service;
 
 import com.example.eduwithbe.Study.Dto.StudySaveRequestDto;
 import com.example.eduwithbe.Study.Dto.StudyRecruitDto;
-import com.example.eduwithbe.paging.CommonParams;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Map;
 
 public interface StudyService {
-//    Map<String, Object> getAllStudies(CommonParams params);
-
-    List<StudyRecruitDto> findAllStudies(); // 스터디 모집글 전체 조회
+    Page<StudyRecruitDto> studyPageList(Pageable pageable); // 스터디 목록 조회
 
     StudyRecruitDto findStudyByNo(final Long stdNo); // 특정 스터디 모집글 조회
 
@@ -25,4 +23,8 @@ public interface StudyService {
     void deleteStudy(Long stdNo); // 스터디 모집글 삭제
 
     String saveStudyScrap(String myEmail, Long stdNo); // 스터디 스크랩 저장
+
+    String deleteStudyScrap(String email, Long stdNo); // 스터디 스크랩 취소
+
+    List<Long> findStudyScrapInfo(String email); // 스터디 스크랩 정보 불러오기
 }

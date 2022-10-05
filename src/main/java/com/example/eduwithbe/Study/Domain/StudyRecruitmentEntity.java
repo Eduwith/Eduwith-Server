@@ -6,8 +6,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -43,19 +41,10 @@ public class StudyRecruitmentEntity {
     @Column(nullable = false)
     private char recruitYN; //모집 완료 여부
 
-    // 관계 매핑
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
-    @JoinColumn(nullable = false, name = "user_email")
-    private UserEntity user;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "studyRecruitment")
-    private final List<StudyApplyEntity> studyApplies = new ArrayList<>();
-
-    public void addStudyApplies(StudyApplyEntity studyApply) {
-        this.studyApplies.add(studyApply);
-    }
+    @JoinColumn(nullable = false, name = "email")
+    private UserEntity user;    // 작성자 이메일
 
     @Builder
     public StudyRecruitmentEntity(String title, String contents, String tag, int total_people, int current_people,
