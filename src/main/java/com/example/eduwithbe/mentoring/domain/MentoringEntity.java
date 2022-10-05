@@ -34,7 +34,14 @@ public class MentoringEntity {
     @JoinColumn(name = "applicant")
     private UserEntity applicant;
 
+//    @Column(name = "star") //평점 평균
+//    private Float star;
+
     @JsonIgnore
     @OneToMany(mappedBy = "mentoring_no", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private final List<MentoringLogEntity> mentoringLog = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "mentoring_no", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private final List<MentoringReviewEntity> mentoringReview = new ArrayList<>();
 }

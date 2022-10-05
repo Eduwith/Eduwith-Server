@@ -47,6 +47,7 @@ public class UserService {
         Map<String, Object> response = new HashMap<>();
 
         UserEntity userEntity = UserEntity.saveUser(userSaveDTO);
+        userEntity.setStar(0F);
 
         if (userEntity.getEmail() != null & userEntity.getPwd() != null
                 & userEntity.getAge() != 0 & userEntity.getName() != null

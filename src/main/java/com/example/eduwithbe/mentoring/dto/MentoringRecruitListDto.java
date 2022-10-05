@@ -26,6 +26,7 @@ public class MentoringRecruitListDto {
     private String keyword;
     private String info;
     private String name;
+    private Float star;
     private List<MentoringScrapGetDto> Scrap;
     //private String email;
 
@@ -41,6 +42,7 @@ public class MentoringRecruitListDto {
         this.keyword = me.getKeyword();
         this.info = me.getInfo();
         this.name = me.getName();
+        this.star = me.getUser().getStar();
         this.Scrap = me.getMentoringScrap().stream()
                 .map(MentoringScrapGetDto::new)
                 .collect(Collectors.toList());
