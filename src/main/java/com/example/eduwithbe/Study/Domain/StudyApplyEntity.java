@@ -2,7 +2,6 @@ package com.example.eduwithbe.Study.Domain;
 
 import com.example.eduwithbe.user.domain.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +26,7 @@ public class StudyApplyEntity {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_email", nullable = false)
+    @JoinColumn(name = "email", nullable = false)
     private UserEntity user;    // 신청자 이메일
 
     @Column(nullable = false)
