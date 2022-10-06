@@ -116,12 +116,12 @@ public class MentoringRecruitmentServiceImpl implements MentoringRecruitmentServ
     public List<MentoringRecruitSearchDto> findByDistance(String email){
         UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + email));
 
-        List<MentoringRecruitmentEntity> mentoringRecruitSearchDto = mr.findByDistance(userEntity.getAddress());
+        List<MentoringRecruitmentEntity> mentoringRecruitSearchDto = mr.findByDistance(userEntity.getEmail(), userEntity.getAddress());
 
         String str = userEntity.getAddress();
         String[] array = str.split(" ");
 
-        List<MentoringRecruitmentEntity> mentoringRecruitSearchDto2 = mr.findByDistanceWide(array[0], str);
+        List<MentoringRecruitmentEntity> mentoringRecruitSearchDto2 = mr.findByDistanceWide(userEntity.getEmail(), array[0], str);
 
         mentoringRecruitSearchDto.addAll(mentoringRecruitSearchDto2);
 

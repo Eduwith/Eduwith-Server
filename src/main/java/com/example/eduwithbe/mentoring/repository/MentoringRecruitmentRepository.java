@@ -30,13 +30,11 @@ public interface MentoringRecruitmentRepository extends JpaRepository<MentoringR
     @Query("select m from MentoringRecruitmentEntity m where m.role = 'E'")
     List<MentoringRecruitmentEntity> findByMentoringMentee();
 
-    @Query("select m from MentoringRecruitmentEntity m where m.region = :region")
-    List<MentoringRecruitmentEntity> findByDistance(String region);
+    @Query("select m from MentoringRecruitmentEntity m where m.region = :region and m.user.email not in :email")
+    List<MentoringRecruitmentEntity> findByDistance(String email, String region);
 
-    @Transactional
-    @Modifying
-    @Query("select m from MentoringRecruitmentEntity m where m.region like %?1% and m.region not in(?2)")
-    List<MentoringRecruitmentEntity> findByDistanceWide(String region, String region2);
+    @Query("select m from MentoringRecruitmentEntity m where m.region like %?2% and m.region not in(?3) and m.user.email not in ?1")
+    List<MentoringRecruitmentEntity> findByDistanceWide(String email, String region, String region2);
 
     @Transactional
     @Modifying
