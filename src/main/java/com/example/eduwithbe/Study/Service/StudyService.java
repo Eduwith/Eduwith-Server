@@ -16,7 +16,7 @@ public interface StudyService {
 
     String saveStudyApply(String email, Long s_no); // 스터디 지원하기
 
-    Long registerStudy(final StudySaveRequestDto studyRequestDto, String email); // 스터디 모집글 등록
+    String registerStudy(StudySaveRequestDto studyRequestDto, String email); // 스터디 모집글 등록
 
     String updateStudy(final Long stdNo, final StudySaveRequestDto studyReq); // 스터디 모집글 수정
 

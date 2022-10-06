@@ -3,6 +3,7 @@ package com.example.eduwithbe.Study.Controller;
 import com.example.eduwithbe.Study.Dto.StudySaveRequestDto;
 import com.example.eduwithbe.Study.Dto.StudyRecruitDto;
 import com.example.eduwithbe.Study.Service.StudyService;
+import com.example.eduwithbe.mentoring.dto.ResultResponse;
 import com.example.eduwithbe.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -58,17 +59,13 @@ public class StudyController {
         return studyService.findStudiesByTag(keyword);
     }
 
-    // 스터디 모집글 등록 후 목록 화면으로 이동
+    // 스터디 모집글 등록
     @PostMapping("/register")
-    public String registerStudy(@RequestBody StudySaveRequestDto studyReq,
-                              HttpServletRequest request){
+    public ResultResponse registerStudy(@RequestBody StudySaveRequestDto studyReq, HttpServletRequest request){
         // 로그인 한 사용자 이메일 추출
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
 
-        // 스터디 모집글 등록
-        studyService.registerStudy(studyReq, user);
-
-        return "success";
+        return new ResultResponse(studyService.registerStudy(studyReq, user));
     }
 
     // 스터디 모집글 삭제
