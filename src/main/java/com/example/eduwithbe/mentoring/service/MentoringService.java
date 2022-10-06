@@ -1,7 +1,10 @@
 package com.example.eduwithbe.mentoring.service;
 
 import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
+import com.example.eduwithbe.mentoring.dto.MentoringRecruitSearchDto;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface MentoringService {
