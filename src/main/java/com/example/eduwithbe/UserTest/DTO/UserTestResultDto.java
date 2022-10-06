@@ -1,10 +1,13 @@
 package com.example.eduwithbe.UserTest.DTO;
 
 import com.example.eduwithbe.UserTest.Domain.UserTestEntity;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-public class UserTestSaveDto {
+@Setter
+public class UserTestResultDto {
     private String mbti;    // 나의 MBTI
     private String animal;  // 동물
 
@@ -17,4 +20,9 @@ public class UserTestSaveDto {
                 .build();
     }
 
+    @Builder
+    public UserTestResultDto(String mbti, String animal) {
+        this.mbti = mbti;
+        this.animal = animal;
+    }
 }
