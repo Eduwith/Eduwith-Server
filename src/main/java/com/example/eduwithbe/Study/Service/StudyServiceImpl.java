@@ -5,6 +5,7 @@ import com.example.eduwithbe.Study.Domain.StudyRecruitmentEntity;
 import com.example.eduwithbe.Study.Domain.StudyScrapEntity;
 import com.example.eduwithbe.Study.Dto.StudySaveRequestDto;
 import com.example.eduwithbe.Study.Dto.StudyRecruitDto;
+import com.example.eduwithbe.Study.Repository.StudyApplyRepository;
 import com.example.eduwithbe.Study.Repository.StudyRepository;
 import com.example.eduwithbe.Study.Repository.StudyScrapRepository;
 import com.example.eduwithbe.user.domain.UserEntity;
@@ -25,6 +26,7 @@ public class StudyServiceImpl implements StudyService{
 
     private final StudyRepository studyRepository;
     private final UserRepository userRepository;
+    private final StudyApplyRepository studyApplyRepository;
     private final StudyScrapRepository studyScrapRepository;
 
     // 스터디 목록 조회
@@ -70,13 +72,15 @@ public class StudyServiceImpl implements StudyService{
                 .result('P')
                 .build();
 
+        studyApplyRepository.save(apply);
+
         return "success";
     }
 
     // 스터디 모집글 등록
     @Override
     @Transactional
-    public Long registerStudy(final StudySaveRequestDto studyReg, String email) {
+    public String registerStudy(StudySaveRequestDto studyReg, String email) {
         // 토큰 사용하여 user 정보 찾기
         UserEntity writer = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("registerStudy : 해당 유저가 존재하지 않습니다."));
@@ -84,10 +88,8 @@ public class StudyServiceImpl implements StudyService{
         System.out.println(writer.getEmail());
 
         // 등록
-        StudyRecruitmentEntity myStudyEntity = studyReg.toEntity(writer);
-        writer.addStudyRecruitment(myStudyEntity);
-
-        return studyRepository.save(myStudyEntity).getS_no();
+        studyRepository.save(studyReg.toEntity(writer));
+        return "success";
     }
 
     // 스터디 모집글 수정
@@ -144,9 +146,7 @@ public class StudyServiceImpl implements StudyService{
     // 스터디 스크랩 정보 불러오기
     @Override
     public List<Long> findStudyScrapInfo(String email) {
-        List<Long> myScrapInfo = studyScrapRepository.findMyStudyScrapInfo(email);
-
-        return myScrapInfo;
+        return studyScrapRepository.findMyStudyScrapInfo(email);
     }
 
 }

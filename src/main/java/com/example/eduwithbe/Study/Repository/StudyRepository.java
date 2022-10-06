@@ -16,7 +16,7 @@ public interface StudyRepository extends JpaRepository<StudyRecruitmentEntity, L
 
     // email이 작성한 모집글 조회
     @Query(value = "SELECT s FROM StudyRecruitmentEntity s where s.user.email = :email")
-    List<StudyRecruitmentEntity> findByUserEmail(@Param("email") String email);
+    List<StudyRecruitmentEntity> findAllByEmail(@Param("email") String email);
 
     // 내가 스크랩한 스터디 번호 조회
     @Query(value = "select s.s_no from StudyRecruitmentEntity s where s.user.email = :email")
@@ -25,6 +25,6 @@ public interface StudyRepository extends JpaRepository<StudyRecruitmentEntity, L
     // 스터디 마감(반환값은 update한 레코드 수)
     @Modifying(clearAutomatically = true)
     @Transactional
-    @Query(value = "UPDATE StudyRecruitmentEntity s SET s.recruitYN=:recruitYN where s.s_no=:s_no")
-    int updateRecruitYN(@Param("s_no") Long s_no, @Param("recruitYN") char recruitYN);
+    @Query(value = "UPDATE StudyRecruitmentEntity s SET s.recruitYN='Y' where s.s_no=:s_no")
+    int updateRecruitYN(@Param("s_no") Long s_no);
 }
