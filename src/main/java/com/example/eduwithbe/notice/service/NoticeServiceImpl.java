@@ -1,24 +1,17 @@
 package com.example.eduwithbe.notice.service;
 
-import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
-import com.example.eduwithbe.mentoring.dto.MentoringRecruitListDto;
-import com.example.eduwithbe.mentoring.dto.MentoringRecruitSaveDto;
-import com.example.eduwithbe.mentoring.dto.MentoringRecruitSaveUserDto;
-import com.example.eduwithbe.mentoring.repository.MentoringRecruitmentRepository;
 import com.example.eduwithbe.notice.domain.NoticeEntity;
 import com.example.eduwithbe.notice.dto.NoticeGetDto;
 import com.example.eduwithbe.notice.dto.NoticeSaveDto;
 import com.example.eduwithbe.notice.repository.NoticeRepository;
-import com.example.eduwithbe.user.domain.UserEntity;
-import com.example.eduwithbe.user.dto.UserUpdateDto;
 import com.example.eduwithbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -49,7 +42,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     //알림 리스트 조회
     public List<NoticeGetDto> findByEmailNotice(String email){
-        List<NoticeEntity> notice = noticeRepository.findByEmailNotice(email);
+        List<NoticeEntity> notice = noticeRepository.findByEmail(email, Sort.by(Sort.Order.desc("notice_no")));
         return notice.stream()
                 .map(NoticeGetDto::new)
                 .collect(Collectors.toList());
