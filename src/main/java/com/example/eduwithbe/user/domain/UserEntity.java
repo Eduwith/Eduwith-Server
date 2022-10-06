@@ -5,6 +5,7 @@ import com.example.eduwithbe.Study.Domain.StudyRecruitmentEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringScrapEntity;
+import com.example.eduwithbe.mentoring.domain.MentoringReviewEntity;
 import com.example.eduwithbe.notice.domain.NoticeEntity;
 import com.example.eduwithbe.user.dto.UserSaveDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -57,6 +58,9 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false, columnDefinition = "int default 0")
     private int day;
 
+    @Column(name = "star")
+    private Float star;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final List<NoticeEntity> noticeEntities = new ArrayList<>();
 
@@ -76,6 +80,13 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private final List<MentoringScrapEntity> mentoringScrap = new ArrayList<>();
 
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private final List<MentoringReviewEntity> mentoringReviewReviewer = new ArrayList<>();
+
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private final List<MentoringReviewEntity> mentoringReviewWriter = new ArrayList<>();
+
+    // === 사용자-스터디 모집글 관계 설정 === //
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     public List<StudyRecruitmentEntity> studyRecruitments = new ArrayList<>();

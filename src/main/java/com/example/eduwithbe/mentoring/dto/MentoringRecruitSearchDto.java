@@ -23,6 +23,7 @@ public class MentoringRecruitSearchDto {
     private String keyword;
     private String info;
     private String name;
+    private Float star;
     private List<MentoringApplyAllDto> mentoringApply;
 
 
@@ -38,6 +39,7 @@ public class MentoringRecruitSearchDto {
         this.way = me.getWay();
         this.keyword = me.getKeyword();
         this.info = me.getInfo();
+        this.star = me.getUser().getStar();
         this.mentoringApply = me.getMentoringApply().stream().map(MentoringApplyAllDto::new).collect(Collectors.toList());
         this.name = me.getUser().getName();
     }

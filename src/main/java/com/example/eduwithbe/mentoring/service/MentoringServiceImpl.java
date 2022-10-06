@@ -43,6 +43,7 @@ public class MentoringServiceImpl implements MentoringService {
 
         mentoringSaveDto.setApplicant(applyUser.get());
         mentoringSaveDto.setM_no(mentoringRecruitment);
+        mentoringSaveDto.setState("진행중");
         mentoringSaveDto.setWriter(mentoringApplyRecruitment.getM_no().getUser());
 
         MentoringEntity apply = mentoringSaveDto.toEntity();
@@ -62,5 +63,11 @@ public class MentoringServiceImpl implements MentoringService {
         mar.delete(mentoringApply);
 
         return "OK";
+    }
+
+    @Override
+    public String updateMentoringState(Long mentoring_no) {
+        mr.updateMentoringState(mentoring_no);
+        return "SUCCESS";
     }
 }

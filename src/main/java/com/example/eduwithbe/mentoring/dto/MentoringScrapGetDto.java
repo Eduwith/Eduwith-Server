@@ -15,11 +15,13 @@ import lombok.Setter;
 public class MentoringScrapGetDto {
     private Long scrap_no;
     private Long m_no;
+    private String title;
     private String email;
 
     public MentoringScrapGetDto(MentoringScrapEntity mentoringScrap) {
         this.scrap_no = mentoringScrap.getScrap_no();
         this.m_no = mentoringScrap.getM_no().getM_no();
+        this.title = mentoringScrap.getM_no().getTitle();
         this.email = mentoringScrap.getUser().getEmail();
     }
 }

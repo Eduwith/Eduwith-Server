@@ -48,7 +48,7 @@ public class MentoringLogController {
         return MentoringLogGetIdDto.builder().mentoringLogEntity(mentoringLogEntity).build();
     }
 
-    @ApiOperation(value = "로글 글 전체 리스트")
+    @ApiOperation(value = "로그 글 전체 리스트")
     @GetMapping(value = "/mentoring/log")
     public MentoringLogAllListCoverDto findByIdMentoringLog(HttpServletRequest request) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
