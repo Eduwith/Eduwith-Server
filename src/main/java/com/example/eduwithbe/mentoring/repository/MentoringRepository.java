@@ -20,6 +20,11 @@ public interface MentoringRepository extends JpaRepository<MentoringEntity, Long
     @Query("select m from MentoringEntity m where (m.writer.email = :email or m.applicant.email = :email) and m.m_no.role = 'E'")
     List<MentoringEntity> findByApplicantOrWriterMentee(@Param("email") String email);
 
+    @Transactional
+    @Modifying
+    @Query("update MentoringEntity m set m.state = '완료' where m.mentoring_no = :mentoring_no")
+    void updateMentoringState(@Param("mentoring_no") Long mentoring_no);
+
 //    @Transactional
 //    @Modifying
 //    @Query("update MentoringEntity m set m.star = :star where m.mentoring_no = :mentoring_no")

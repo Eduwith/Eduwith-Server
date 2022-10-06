@@ -16,12 +16,14 @@ public class MentoringSaveDto {
     private MentoringRecruitmentEntity m_no;
     private UserEntity applicant;
     private UserEntity writer;
+    private String state;
 
     public MentoringEntity toEntity(){
         return MentoringEntity.builder()
                 .m_no(m_no)
                 .applicant(applicant)
                 .writer(writer)
+                .state(state)
                 .build();
     }
 }
