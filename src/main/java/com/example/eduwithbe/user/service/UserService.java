@@ -5,6 +5,7 @@ import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringScrapEntity;
 import com.example.eduwithbe.mentoring.dto.MentoringApplyEmailDto;
 import com.example.eduwithbe.mentoring.dto.MentoringScrapGetDto;
+import com.example.eduwithbe.mentoring.dto.MentoringScrapGetNoDto;
 import com.example.eduwithbe.mentoring.dto.MentoringScrapSaveDto;
 import com.example.eduwithbe.mentoring.repository.MentoringRecruitScrapRepository;
 import com.example.eduwithbe.mentoring.repository.MentoringRecruitmentRepository;
@@ -96,12 +97,12 @@ public class UserService {
     }
 
     //유저 멘토링 스크랩 리스트
-    public List<MentoringScrapGetDto> findByEmailScrap(String email) {
+    public List<MentoringScrapGetNoDto> findByEmailScrap(String email) {
 
         List<MentoringScrapEntity> mentoringScrapEntity = msr.findByEmailMentoringScrap(email);
 
         return mentoringScrapEntity.stream()
-                .map(MentoringScrapGetDto::new)
+                .map(MentoringScrapGetNoDto::new)
                 .collect(Collectors.toList());
     }
 
