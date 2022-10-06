@@ -1,7 +1,11 @@
 package com.example.eduwithbe.mentoring.dto;
 
 import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
+import com.example.eduwithbe.mentoring.domain.MentoringScrapEntity;
 import lombok.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Getter
@@ -19,6 +23,8 @@ public class MentoringRecruitDto {
     private String keyword;
     private String info;
     private String name;
+    private Float star;
+    private String scrap;
 
     @Builder
     public MentoringRecruitDto(MentoringRecruitmentEntity me) {
@@ -32,5 +38,7 @@ public class MentoringRecruitDto {
         this.keyword = me.getKeyword();
         this.info = me.getInfo();
         this.name = me.getName();
+        this.star = me.getUser().getStar();
+        this.scrap = scrap;
     }
 }

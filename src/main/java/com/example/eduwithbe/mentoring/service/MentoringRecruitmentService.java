@@ -32,5 +32,7 @@ public interface MentoringRecruitmentService {
 
     List<MentoringRecruitListDto> findByMentoringMentee();
 
+    List<MentoringRecruitSearchDto> findByDistance(String email);
+
     List<MentoringRecruitListDto> findByFilter(List<String> field, List<String> region, List<Integer> m_period, List<String> way);
 }

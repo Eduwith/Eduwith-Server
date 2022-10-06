@@ -16,6 +16,9 @@ public interface MentoringRecruitScrapRepository extends JpaRepository<Mentoring
     @Query("select m from MentoringScrapEntity m where m.user.email = :email and m.m_no.m_no = :m_no")
     MentoringScrapEntity findByEmailAndMNoMentoringScrap(@Param("email") String email, @Param("m_no") Long m_no);
 
+    @Query("select m from MentoringScrapEntity m where m.user.email = :email and m.m_no.m_no = :m_no")
+    List<MentoringScrapEntity> findByEmailAndMNoMentoringScrapList(@Param("email") String email, @Param("m_no") Long m_no);
+
     @Query("select m from MentoringScrapEntity m where m.user.email = :email")
     List<MentoringScrapEntity> findByEmailMentoringScrap(@Param("email") String email);
 
