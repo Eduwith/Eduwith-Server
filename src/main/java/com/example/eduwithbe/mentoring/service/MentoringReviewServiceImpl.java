@@ -36,6 +36,8 @@ public class MentoringReviewServiceImpl implements MentoringReviewService {
 
         if(Objects.equals(mentoringEntity.getWriter().getEmail(), userEntity.getEmail())) return "FAILURE";
 
+        if(Objects.equals(mentoringEntity.getState(), "진행중")) return "FAILURE";
+
         MentoringReviewUserSaveDto mentoringReviewSaveDto = new MentoringReviewUserSaveDto();
         mentoringReviewSaveDto.setMentoring_no(mentoringEntity);
         mentoringReviewSaveDto.setReviewer(userEntity);
