@@ -4,10 +4,7 @@ import com.example.eduwithbe.UserTest.Service.UserTestService;
 import com.example.eduwithbe.UserTest.DTO.UserTestSaveDto;
 import com.example.eduwithbe.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -21,7 +18,7 @@ public class UserTestController {
     private final UserTestService userTestService;
 
     // 학습유형 테스트 결과 저장
-    @GetMapping("")
+    @PostMapping("")
     public Map<String, String> saveStudyTypeTestResult(HttpServletRequest request, @RequestBody UserTestSaveDto userTestSaveDto) {
         // 현재 로그인한 사용자 이메일 추출
         String userEmail = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
