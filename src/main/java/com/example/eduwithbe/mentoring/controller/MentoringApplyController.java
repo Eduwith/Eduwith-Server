@@ -4,6 +4,7 @@ package com.example.eduwithbe.mentoring.controller;
 import com.example.eduwithbe.mentoring.domain.MentoringApplyEntity;
 import com.example.eduwithbe.mentoring.domain.MentoringRecruitmentEntity;
 import com.example.eduwithbe.mentoring.dto.MentoringApplyEmailDto;
+import com.example.eduwithbe.mentoring.dto.MentoringApplyUrgeDto;
 import com.example.eduwithbe.mentoring.dto.ResultResponse;
 import com.example.eduwithbe.mentoring.repository.MentoringApplyRepository;
 import com.example.eduwithbe.mentoring.repository.MentoringRecruitmentRepository;
@@ -122,12 +123,12 @@ public class MentoringApplyController {
     }
 
     @ApiOperation(value = "멘토링 모집글 지원 수락 독촉")
-    @PostMapping(value = "/mentoring/{m_no}/apply/{apply_no}/urge")
-    public ResultResponse saveMentoringUrgeNotice(HttpServletRequest request, @PathVariable Long m_no, @PathVariable Long apply_no) {
+    @PostMapping(value = "/mentoring/apply/urge")
+    public ResultResponse saveMentoringUrgeNotice(HttpServletRequest request, @RequestBody MentoringApplyUrgeDto mentoringApplyUrgeDto) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         UserEntity userEntity = userRepository.findByEmail(user).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다." + user));
-        Optional<MentoringRecruitmentEntity> mentoringRecruitment = mentoringRecruitmentRepository.findById(m_no);
-        MentoringApplyEntity mentoringApply = mentoringApplyRepository.findById(apply_no).orElseThrow(() -> new IllegalArgumentException("해당 멘토링 지원이 존재하지 않습니다." + apply_no));
+        Optional<MentoringRecruitmentEntity> mentoringRecruitment = mentoringRecruitmentRepository.findById(mentoringApplyUrgeDto.getM_no());
+        MentoringApplyEntity mentoringApply = mentoringApplyRepository.findById(mentoringApplyUrgeDto.getApply_no()).orElseThrow(() -> new IllegalArgumentException("해당 멘토링 지원이 존재하지 않습니다." + mentoringApplyUrgeDto.getApply_no()));
 
         ResultResponse resultResponse = new ResultResponse();
 
