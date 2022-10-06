@@ -20,9 +20,9 @@ public class UserTestController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserTestService userTestService;
 
-    // 학습 유형 테스트 실시
+    // 학습유형 테스트 결과 저장
     @GetMapping("")
-    public Map<String, String> studyTypeTest(HttpServletRequest request, @RequestBody UserTestSaveDto userTestSaveDto) {
+    public Map<String, String> saveStudyTypeTestResult(HttpServletRequest request, @RequestBody UserTestSaveDto userTestSaveDto) {
         // 현재 로그인한 사용자 이메일 추출
         String userEmail = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
 

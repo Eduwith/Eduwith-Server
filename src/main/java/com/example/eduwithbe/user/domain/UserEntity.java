@@ -97,16 +97,9 @@ public class UserEntity implements UserDetails {
         this.studyRecruitments.add(study);
     }
 
-    // === 사용자-스터디 지원 관계 설정 === //
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     public List<StudyApplyEntity> studyApplies = new ArrayList<>();
-
-
-    // 지원 정보 작성
-    public void addStudyApplies(StudyApplyEntity apply) {
-        this.studyApplies.add(apply);
-    }
 
 //    public void newMentoringRecruitment(MentoringRecruitmentEntity m){
 //        this.mentoringRecruitments.

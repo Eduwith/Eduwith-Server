@@ -5,13 +5,13 @@ import com.example.eduwithbe.Study.Domain.StudyRecruitmentEntity;
 import com.example.eduwithbe.Study.Domain.StudyScrapEntity;
 import com.example.eduwithbe.Study.Dto.StudySaveRequestDto;
 import com.example.eduwithbe.Study.Dto.StudyRecruitDto;
-import com.example.eduwithbe.Study.Repository.StudyApplyRepository;
 import com.example.eduwithbe.Study.Repository.StudyRepository;
 import com.example.eduwithbe.Study.Repository.StudyScrapRepository;
-import com.example.eduwithbe.mappers.StudyMapper;
 import com.example.eduwithbe.user.domain.UserEntity;
 import com.example.eduwithbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,59 +25,26 @@ public class StudyServiceImpl implements StudyService{
 
     private final StudyRepository studyRepository;
     private final UserRepository userRepository;
-    private final StudyApplyRepository studyApplyRepository;
     private final StudyScrapRepository studyScrapRepository;
-    private final StudyMapper studyMapper;
 
-
-//    @Override
-//// 모든 스터디 모집글 조회 & 태그 검색 (With. Pagination)
-//    public Map<String, Object> getAllStudies(CommonParams params) {
-//        // 모집글 수 조회
-//        int count = studyMapper.count(params);
-//
-//        // 등록된 모집글이 없는 경우, 로직 종료
-//        if(count < 1) {
-//            return Collections.emptyMap();
-//        }
-//
-//        // 페이지네이션 정보 계산
-//        Pagination pagination = new Pagination(count, params);
-//        params.setPagination(pagination);
-//
-//        // 모집글 리스트 조회
-//        List<StudyRecruitDto> list = studyMapper.findAll(params);
-//
-//        // 데이터 반환
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("params", params);
-//        response.put("list", list);
-//        return response;
-//    }
-
-
-    // 전체 목록 조회
+    // 스터디 목록 조회
     @Override
-    public List<StudyRecruitDto> findAllStudies() {
-        List<StudyRecruitmentEntity> studyList = studyRepository.findAll();
-        return studyList.stream()
-                .map(StudyRecruitDto::new)
-                .collect(Collectors.toList());
-    }
-//    @Override
-//    public List<StudyResponseDto> getAllStudies() {
-//        PageRequest pageRequest = PageRequest.of(0,6);
-//        return studyRepository.findAll(pageRequest).stream().map(StudyResponseDto::new).collect(Collectors.toList());
-//    }
+    @Transactional
+    public Page<StudyRecruitDto> studyPageList(Pageable pageable) {
+        Page<StudyRecruitmentEntity> studyEntities = studyRepository.findAll(pageable);
 
-    // 모집글 상세정보 조회
+        return studyEntities.map(StudyRecruitDto::new);
+    }
+
+    // 특정 모집글 상세정보 조회
     @Override
     public StudyRecruitDto findStudyByNo(final Long stdNo) {
-        StudyRecruitmentEntity entity = studyRepository.findById(stdNo).orElseThrow(() -> new IllegalArgumentException("해당 글이 존재하지 않습니다."));
+        StudyRecruitmentEntity entity = studyRepository.findById(stdNo)
+                .orElseThrow(() -> new IllegalArgumentException("해당 글이 존재하지 않습니다."));
         return new StudyRecruitDto(entity);
     }
 
-    // 스터디 태그 검색
+    // 스터디 키워드(태그) 검색
     @Override
     public List<StudyRecruitDto> findStudiesByTag(String keyword) {
         List<StudyRecruitmentEntity> studyRecruitmentEntities = studyRepository.findByTagContaining(keyword);
@@ -86,12 +53,15 @@ public class StudyServiceImpl implements StudyService{
                 .collect(Collectors.toList());
     }
 
+    // 스터디 신청하기
     @Override
     @Transactional
     public String saveStudyApply(String email, Long s_no) {
         // 신청자 정보, 신청한 스터디의 정보 가져오기
-        UserEntity applicant = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("saveStudyApply : 사용자가 없습니다."));
-        StudyRecruitmentEntity study = studyRepository.findById(s_no).orElseThrow(() -> new IllegalArgumentException("saveStudyApply : 스터디가 없습니다."));
+        UserEntity applicant = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("saveStudyApply : 사용자가 없습니다."));
+        StudyRecruitmentEntity study = studyRepository.findById(s_no)
+                .orElseThrow(() -> new IllegalArgumentException("saveStudyApply : 스터디가 없습니다."));
 
         // 지원 정보
         StudyApplyEntity apply = StudyApplyEntity.builder()
@@ -100,15 +70,8 @@ public class StudyServiceImpl implements StudyService{
                 .result('P')
                 .build();
 
-        // 해당 모집글의 신청현황 업데이트
-        study.addStudyApplies(apply);
-
-        // 스터디 지원 정보 저장
-        studyApplyRepository.save(apply);
-
         return "success";
     }
-
 
     // 스터디 모집글 등록
     @Override
@@ -145,17 +108,13 @@ public class StudyServiceImpl implements StudyService{
         studyRepository.deleteById(stdNo);
     }
 
-    // 스터디 스크랩 정보 저장
+    // 스터디 스크랩 저장
     @Override
+    @Transactional
     public String saveStudyScrap(String myEmail, Long stdNo) {
-        // 스크랩하려는 모집글의 번호 가져오기
-        Long s_no = studyRepository.findById(stdNo)
-                .orElseThrow(() -> new IllegalArgumentException("saveStudyScrap : 해당 글이 존재하지 않습니다."))
-                .getS_no();
-
         // 내 스터디 모집글인지 확인
-        List<Long> stdNumsList = studyRepository.findStdNumsByMyEmail(myEmail);
-        if(stdNumsList.contains(s_no)) {
+        List<Long> myStudyNumList = studyRepository.findStdNumsByMyEmail(myEmail);
+        if(myStudyNumList.contains(stdNo)) {
             return "내 글엔 스크랩할 수 없습니다.";
         }
         else {
@@ -167,4 +126,27 @@ public class StudyServiceImpl implements StudyService{
             return "success";
         }
     }
+
+    // 스터디 스크랩 취소
+    @Transactional
+    @Override
+    public String deleteStudyScrap(String email, Long stdNo) {
+        // 스크랩 정보 찾기
+        Optional<StudyScrapEntity> myScrap = studyScrapRepository.findStudyScrapEntityByEmailAndAndS_no(email, stdNo);
+
+        if(myScrap.isPresent()) {
+            studyScrapRepository.deleteById(myScrap.get().getScrapNo());
+            return "success";
+        } else
+            return "스크랩 정보가 없습니다.";
+    }
+
+    // 스터디 스크랩 정보 불러오기
+    @Override
+    public List<Long> findStudyScrapInfo(String email) {
+        List<Long> myScrapInfo = studyScrapRepository.findMyStudyScrapInfo(email);
+
+        return myScrapInfo;
+    }
+
 }
