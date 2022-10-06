@@ -1,9 +1,12 @@
 package com.example.eduwithbe.UserTest.Service;
 
-import com.example.eduwithbe.UserTest.DTO.UserTestSaveDto;
+import com.example.eduwithbe.UserTest.DTO.UserTestResultDto;
+import com.example.eduwithbe.UserTest.Domain.UserTestEntity;
 import com.example.eduwithbe.UserTest.Repository.UserTestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -12,7 +15,7 @@ public class UserTestServiceImpl implements UserTestService {
 
     @Override
     // 테스트 결과 저장
-    public String saveTestResult(String email, UserTestSaveDto utDto) {
+    public String saveTestResult(String email, UserTestResultDto utDto) {
         // mate-mbti 저장하기
         String myMbti = utDto.getMbti();
         String mate_mbti;
@@ -60,4 +63,16 @@ public class UserTestServiceImpl implements UserTestService {
         return "success";
     }
 
+    // 나의 테스트 결과 조회
+    @Override
+    public UserTestResultDto findMyTestResult(String email) {
+        Optional<UserTestEntity> testResult = userTestRepository.findByEmail(email);
+
+        UserTestResultDto utDto = new UserTestResultDto("", "");
+        if(testResult.isPresent()) {
+            utDto.setAnimal(testResult.get().getAnimal());
+            utDto.setMbti(testResult.get().getMbti());
+        }
+        return utDto;
+    }
 }
