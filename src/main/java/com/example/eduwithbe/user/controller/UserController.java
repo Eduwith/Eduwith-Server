@@ -1,6 +1,7 @@
 package com.example.eduwithbe.user.controller;
 
 import com.example.eduwithbe.mentoring.dto.MentoringScrapGetDto;
+import com.example.eduwithbe.mentoring.dto.MentoringScrapGetNoDto;
 import com.example.eduwithbe.mentoring.dto.MentoringScrapMNoDto;
 import com.example.eduwithbe.mentoring.dto.ResultResponse;
 import com.example.eduwithbe.mentoring.repository.MentoringRecruitScrapRepository;
@@ -168,7 +169,7 @@ public class UserController {
 
     @ApiOperation(value = "멘토링 모집글 스크랩 리스트")
     @GetMapping(value = "/scrap/mentoring")
-    public List<MentoringScrapGetDto> getMentoringRecruit(HttpServletRequest request) {
+    public List<MentoringScrapGetNoDto> getMentoringRecruit(HttpServletRequest request) {
         String user = jwtTokenProvider.getUserPk(request.getHeader("Authorization"));
         return us.findByEmailScrap(user);
     }
